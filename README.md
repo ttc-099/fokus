@@ -28,6 +28,8 @@ FOKUS is a web app designed to help learners create and follow **personalized, A
 * Roadmap cells that represent learning goals
 * General representation of main UI
 
+* **Note: This project is part of my ongoing learning process in TypeScript and frontend development. While some starter code was AI-assisted, all implementations have been adapted and expanded to fit my own design and vision.**
+
 ---
 
 ## 📈 Future Roadmap
