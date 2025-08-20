@@ -26,8 +26,7 @@ FOKUS is a web app designed to help learners create and follow **personalized, A
 ## 📌 Current Features (Prototype)
 
 * Roadmap cells that represent learning goals
-* Interactive UI mockups (in progress)
-* Tech stack documentation
+* General representation of main UI
 
 ---
 
