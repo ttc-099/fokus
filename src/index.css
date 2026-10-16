@@ -711,3 +711,213 @@ button:focus-visible {
     font-size: 1rem;
   }
 }
+
+/* ===== full-version additions: auth, dashboard, progress ===== */
+
+/* centered login/register card */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.auth-card h1 {
+  margin: 0;
+  letter-spacing: 0.35em;
+  color: #646cff;
+}
+
+.auth-subtitle {
+  opacity: 0.75;
+  margin: 0.75rem 0 1.75rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-form input {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.7em 1em;
+  font-size: 1em;
+  font-family: inherit;
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+}
+
+.auth-error {
+  color: #ff6b6b;
+  margin: 0.5rem 0;
+}
+
+.auth-switch {
+  margin-top: 1.5rem;
+  opacity: 0.75;
+}
+
+/* nav account area */
+.nav-auth {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-user {
+  opacity: 0.8;
+  font-size: 0.9em;
+}
+
+/* ghost + danger buttons */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  color: #ff6b6b;
+  font-size: 0.85em;
+  padding: 0.4em 0.9em;
+}
+
+.btn-danger:hover {
+  border-color: #ff6b6b;
+}
+
+/* dashboard roadmap cards */
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.roadmap-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.roadmap-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.roadmap-card-head h3 {
+  margin: 0 0 0.9rem;
+}
+
+.roadmap-card-head a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.roadmap-card-head a:hover {
+  color: #646cff;
+}
+
+/* progress bar */
+.progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #646cff, #61dafb);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* roadmap view header */
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  opacity: 0.75;
+}
+
+.roadmap-heading {
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* completed cells */
+.cell.completed {
+  border-color: rgba(97, 218, 251, 0.6);
+}
+
+.cell.completed .cell-title {
+  opacity: 0.65;
+  text-decoration: line-through;
+  text-decoration-color: rgba(97, 218, 251, 0.8);
+}
+
+.cell-done-mark {
+  color: #61dafb;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+/* cell modal extras */
+.cell-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cell-modal-head h2 {
+  margin: 0;
+}
+
+.cell-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+/* light mode tweaks for the new pieces */
+@media (prefers-color-scheme: light) {
+  .auth-card,
+  .roadmap-card {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .auth-form input {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .progress-bar {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-ghost {
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+}
