@@ -116,17 +116,24 @@
   .bench b { color: var(--ink); }
   .fine { font-size: 17px; color: var(--ink-3); }
 </style></head><body><div class="slide tint">
-  <p class="eyebrow">Where this goes</p>
-  <h2>One engine, four audiences, in order.</h2>
-  <p class="lede" style="margin-bottom: 22px;">
-    Each stage reuses the same topic-in, path-out core. We move when the stage before it works
-    for its users.
+  <p class="eyebrow">The product in code</p>
+  <h2>One request, five steps, nothing invented.</h2>
+  <p class="lede" style="margin-bottom: 28px;">
+    Recommendations are real: videos are scraped from YouTube search and verified, courses are
+    platform search links. No fabricated titles, ids or badges.
   </p>
-  <div>
-    <div class="tier"><span class="badge now">Now</span><div><h4>Students teaching themselves</h4><p>One person, one topic, one account, offline copies.</p></div><p class="why">Shipping</p></div>
-    <div class="tier"><span class="badge next">Next</span><div><h4>Study groups and small cohorts</h4><p>Shared roadmaps, a join code, who is on which module.</p></div><p class="why">After beta feedback</p></div>
-    <div class="tier"><span class="badge later">Later</span><div><h4>Classrooms and trainers</h4><p>Instructor-authored paths, deadlines, per-module reporting.</p></div><p class="why">Needs instructor accounts</p></div>
-    <div class="tier"><span class="badge later">Later</span><div><h4>Institutions</h4><p>Faculty deployment, SSO, content review before a path reaches students.</p></div><p class="why">Needs the stage above proven</p></div>
+  <div class="flow">
+    <div class="step"><div class="bar"></div><p class="who">Learner</p><h4>Types a topic</h4><p>A gate blocks key-spam and non-learnable input before any model call.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">System</p><h4>Researches</h4><p>Pulls live Wikipedia sources for the topic, and per module when it opens.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Writes the stages</h4><p>Between 5 and 12, chosen from the topic's real scope. Ordered beginner to advanced.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">System</p><h4>Finds resources</h4><p>Real YouTube results, verified; course search links per platform.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Builds the check</h4><p>3 to 5 targeted questions per stage, from that stage's guide. Stored once.</p></div>
+  </div>
+  <div class="grid-4" style="margin-top: 32px;">
+    <div class="kpi plain"><div class="n">~2.4s</div><div class="l">to generate a whole path</div></div>
+    <div class="kpi plain"><div class="n">2.5s</div><div class="l">to write one stage guide, then cached</div></div>
+    <div class="kpi plain"><div class="n">1</div><div class="l">model call per artefact, never repeated</div></div>
+    <div class="kpi plain"><div class="n">0</div><div class="l">fabricated videos or links, verified at source</div></div>
   </div>
   <div class="foot"><span>FOKUS</span><span>11</span></div>
 </div>

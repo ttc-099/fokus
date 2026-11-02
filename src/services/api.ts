@@ -43,12 +43,21 @@ export interface ModuleQuiz {
   pass?: number;
 }
 
+export interface WorkedExample {
+  setup: string;
+  steps: string[];
+  result: string;
+  watchout: string;
+}
+
 export interface ModuleDetail {
   v?: number;
   content?: string;
   concepts?: string[];
   exercise?: string;
   mistake?: string;
+  // a fully worked example of the stage skill: what to do, step by step
+  worked?: WorkedExample | null;
   sources: SourceLink[];
 }
 

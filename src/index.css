@@ -2212,3 +2212,67 @@ button:disabled { cursor: not-allowed; }
 }
 .quiz-kind.apply { background: var(--blue-soft); color: var(--blue-dark); border: 1px solid var(--blue-border); }
 .quiz-kind.trap { background: #fff7ed; color: #b45309; border: 1px solid #fed7aa; }
+
+/* worked example: the stage skill done once, start to finish */
+.worked {
+  margin: 26px 0 8px;
+  border: 1px solid var(--blue-border);
+  background: var(--blue-soft);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.worked-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-dark);
+  margin-bottom: 8px;
+}
+.worked-setup { font-size: 0.98rem; color: var(--ink); margin-bottom: 14px; }
+.worked-steps { list-style: none; margin: 0 0 14px; padding: 0; }
+.worked-steps li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+  padding: 5px 0;
+  line-height: 1.5;
+}
+.worked-num {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  margin-top: 2px;
+}
+.worked-result {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  border-top: 1px solid var(--blue-border);
+  padding-top: 12px;
+}
+.worked-watchout {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  color: #b45309;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 12px;
+}
+@media (max-width: 700px) {
+  .worked { padding: 16px; margin: 20px 0 6px; }
+  .worked-steps li { font-size: 0.92rem; }
+}

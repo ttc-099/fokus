@@ -1,0 +1,135 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blue: #2563eb; --blue-dark: #1d4ed8; --blue-soft: #eff6ff; --blue-border: #bfdbfe;
+    --ink: #0f172a; --ink-2: #475569; --ink-3: #64748b;
+    --canvas: #f5f8fc; --card: #fff; --line: #e2e8f0;
+    --ok: #16a34a; --warn: #b45309;
+  }
+  html, body { width: 1920px; background: #fff; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); line-height: 1.45; }
+
+  .slide {
+    width: 1920px; height: 1080px; position: relative; overflow: hidden;
+    background: var(--card); padding: 80px 110px 128px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .slide.dark { background: #0f172a; color: #fff; }
+  .slide.tint { background: var(--blue-soft); }
+
+  .eyebrow { flex-shrink: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+  .dark .eyebrow { color: #93c5fd; }
+  h1 { font-size: 84px; line-height: 1.04; letter-spacing: -0.03em; font-weight: 800; }
+  h2 { font-size: 52px; line-height: 1.08; letter-spacing: -0.025em; font-weight: 800; margin-bottom: 22px; }
+  .lede { font-size: 26px; color: var(--ink-2); max-width: 1340px; }
+  .dark .lede { color: #bcd0ee; }
+  .foot {
+    position: absolute; left: 110px; right: 110px; bottom: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 18px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 14px;
+  }
+  .dark .foot { color: #7b8fb3; border-color: #23324b; }
+
+  .wordmark { display: inline-flex; align-items: center; gap: 16px; }
+  .mark { width: 62px; height: 62px; border-radius: 15px; background: var(--blue); color: #fff; font-weight: 800; font-size: 34px; display: grid; place-items: center; }
+  .wordmark span { font-size: 32px; font-weight: 800; letter-spacing: 0.02em; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 30px; }
+  .dark .card { background: #16233c; border-color: #24344f; }
+  .card h3 { font-size: 27px; font-weight: 700; margin-bottom: 9px; letter-spacing: -0.01em; }
+  .card p { font-size: 21px; color: var(--ink-2); }
+  .dark .card p { color: #b4c4dd; }
+
+  .kpi { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px 30px; }
+  .kpi .n { font-size: 62px; font-weight: 800; letter-spacing: -0.03em; color: var(--blue-dark); line-height: 1.02; }
+  .kpi .l { font-size: 20px; color: var(--ink-2); margin-top: 8px; }
+  .kpi .s { font-size: 16px; color: var(--ink-3); margin-top: 10px; }
+  .kpi.plain .n { color: var(--ink); }
+
+  .shot { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--canvas); box-shadow: 0 18px 44px rgba(15,23,42,0.16); }
+  .shot img { display: block; width: 100%; }
+  .shot-bar { height: 32px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 15px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e8f0; }
+  .url { margin-left: 12px; font-size: 16px; color: var(--ink-3); background: var(--canvas); border-radius: 999px; padding: 2px 13px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 10px; background: var(--blue-soft); border: 1px solid var(--blue-border); color: var(--blue-dark); font-size: 20px; font-weight: 700; padding: 8px 18px; border-radius: 999px; }
+  .dark .pill { background: #1c2f4f; border-color: #2f4a75; color: #cfe0ff; }
+
+  .num { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 21px; margin-bottom: 14px; }
+
+  ul { list-style: none; }
+  ul li { font-size: 22px; color: var(--ink-2); padding: 8px 0 8px 32px; position: relative; }
+  ul li::before { content: ""; position: absolute; left: 3px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--blue-border); }
+  .dark ul li { color: #b4c4dd; }
+
+  /* pipeline */
+  .flow { display: flex; align-items: stretch; }
+  .flow .step { flex: 1; padding: 0 16px; }
+  .flow .step .bar { height: 7px; border-radius: 6px; background: var(--blue); margin-bottom: 20px; }
+  .flow .step:nth-child(2) .bar { background: #3b82f6; }
+  .flow .step:nth-child(3) .bar { background: #60a5fa; }
+  .flow .step:nth-child(4) .bar { background: #93c5fd; }
+  .flow .step:nth-child(5) .bar { background: var(--blue-border); }
+  .flow h4 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .flow p { font-size: 19px; color: var(--ink-2); }
+  .flow .who { font-size: 16px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+
+  /* ladder */
+  .tier { display: grid; grid-template-columns: 130px 1fr 260px; gap: 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .tier:last-child { border-bottom: none; }
+  .tier .badge { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 12px; border-radius: 999px; text-align: center; }
+  .tier .now { background: var(--blue); color: #fff; }
+  .tier .next { background: #e2e8f0; color: var(--ink-2); }
+  .tier .later { background: #f1f5f9; color: var(--ink-3); border: 1px solid var(--line); }
+  .tier h4 { font-size: 27px; font-weight: 700; margin-bottom: 3px; }
+  .tier p { font-size: 20px; color: var(--ink-2); }
+  .tier .why { font-size: 18px; color: var(--ink-3); text-align: right; }
+
+  /* scenario split */
+  .vs-grid { display: grid; grid-template-columns: 1fr 72px 1fr; gap: 22px; align-items: stretch; }
+  .vs { display: grid; place-items: center; font-size: 34px; font-weight: 800; color: var(--ink-3); }
+  .panel { border-radius: 18px; padding: 26px 28px; }
+  .panel.bad { background: #fef2f2; border: 1px solid #fecaca; }
+  .panel.good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .panel h4 { font-size: 18px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .panel.bad h4 { color: #b91c1c; }
+  .panel.good h4 { color: #15803d; }
+  .panel p { font-size: 21px; }
+  .panel.bad p { color: #7f1d1d; }
+  .panel.good p { color: #14532d; }
+
+  /* pricing */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .price { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px 30px; display: flex; flex-direction: column; }
+  .price.featured { border: 2px solid var(--blue); box-shadow: 0 14px 34px rgba(37,99,235,0.13); }
+  .price .tiername { font-size: 17px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .price .amount { font-size: 52px; font-weight: 800; letter-spacing: -0.03em; margin: 6px 0 2px; }
+  .price .amount small { font-size: 21px; font-weight: 600; color: var(--ink-3); letter-spacing: 0; }
+  .price .sub { font-size: 18px; color: var(--ink-3); margin-bottom: 16px; }
+  .price ul li { font-size: 20px; padding: 6px 0 6px 30px; }
+  .price ul li::before { top: 16px; }
+  .bench { margin-top: 22px; display: flex; gap: 14px; align-items: center; font-size: 20px; color: var(--ink-2); flex-wrap: wrap; }
+  .bench b { color: var(--ink); }
+  .fine { font-size: 17px; color: var(--ink-3); }
+</style></head><body><div class="slide dark">
+  <p class="eyebrow">What we know is missing</p>
+  <h2>The honest limit list.</h2>
+  <p class="lede" style="margin-bottom: 30px;">
+    A pitch that hides its constraints gets caught in the first question. Each of these has a
+    next step.
+  </p>
+  <div class="grid-2" style="gap: 22px;">
+    <div class="card"><h3>Capacity</h3><p>On the free model tier the instance caps out around six fully explored roadmaps a day. A paid key removes that ceiling and is the first spend the beta needs.</p></div>
+    <div class="card"><h3>Retention evidence</h3><p>No cohort data yet. Fifteen completions is a signal that the loop works, not proof that people come back for module nine on a new topic.</p></div>
+    <div class="card"><h3>Surface area</h3><p>No sharing, no groups, no instructor tools. Every roadmap is personal-only today, which is what the Cohort tier has to change.</p></div>
+    <div class="card"><h3>Distribution</h3><p>Hosted on a personal tunnel. A real domain and a managed host are required before any public beta link goes out.</p></div>
+  </div>
+  <div class="foot"><span>Next: closed beta with 10 self-study students</span><span>16</span></div>
+</div>
+
+
+</body></html>

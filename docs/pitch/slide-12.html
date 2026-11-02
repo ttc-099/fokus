@@ -116,19 +116,57 @@
   .bench b { color: var(--ink); }
   .fine { font-size: 17px; color: var(--ink-3); }
 </style></head><body><div class="slide">
-  <p class="eyebrow">What is built today</p>
-  <h2>Not a mockup. A working account-based app.</h2>
-  <div class="grid-2" style="grid-template-columns: 1.05fr 1fr; align-items: start; gap: 34px;">
-    <div>
-      <div class="grid-2" style="gap: 18px;">
-        <div class="card"><h3>Learner side</h3><ul style="margin-top: 6px;"><li>Accounts, saved roadmaps, progress</li><li>Course sidebar with the module tree</li><li>Watch, read, check per module</li><li>Offline copies</li></ul></div>
-        <div class="card"><h3>Operator side</h3><ul style="margin-top: 6px;"><li>Usage, tokens and cost</li><li>Users and their roadmaps</li><li>Content list and progress</li><li>Refusals and rate limits</li></ul></div>
-      </div>
-      <div class="card" style="margin-top: 18px;"><h3>Also shipped</h3><p>Installable as a phone app, an Android build on the repo, and a public landing page that shows a real roadmap building itself.</p></div>
+  <p class="eyebrow">Business model</p>
+  <h2>Priced under what students already pay.</h2>
+  <div class="price-grid" style="margin-top: 4px;">
+    <div class="price">
+      <p class="tiername">Free</p>
+      <p class="amount">RM0</p>
+      <p class="sub">for trying it properly</p>
+      <ul>
+        <li>One active roadmap</li>
+        <li>All 8 modules and checks</li>
+        <li>Progress saved to the account</li>
+        <li>Offline copy of that roadmap</li>
+      </ul>
     </div>
-    <div class="shot">
-      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / admin</span></div>
-      <img src="shots/admin-overview.png" alt="Admin dashboard with instance stats, a roadmaps per day chart and a recent roadmaps list">
+    <div class="price featured">
+      <p class="tiername">Plus</p>
+      <p class="amount">RM12 <small>/ month</small></p>
+      <p class="sub">for the student with three topics on the go</p>
+      <ul>
+        <li>Unlimited roadmaps</li>
+        <li>Offline copies of all of them</li>
+        <li>Priority generation when busy</li>
+        <li>Export a roadmap as a document</li>
+      </ul>
+    </div>
+    <div class="price">
+      <p class="tiername">Cohort</p>
+      <p class="amount">RM6 <small>/ seat / month</small></p>
+      <p class="sub">10 seats minimum, for a class or study group</p>
+      <ul>
+        <li>Shared roadmaps and a join code</li>
+        <li>Per-module completion view</li>
+        <li>One invoice, one owner</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bench">
+    <span class="pill">ChatGPT+ RM90/month</span>
+    <span class="pill">Notion RM51/month</span>
+    <span>Plus sits at <b>13%</b> of the ChatGPT+ benchmark and <b>24%</b> of Notion, for one job rather than a general tool.</span>
+  </div>
+  <div class="grid-2" style="margin-top: 24px; gap: 24px;">
+    <div class="card">
+      <h3>Unit economics</h3>
+      <p style="margin-bottom: 10px;">A new roadmap costs about <b>RM0.003</b> of inference. A roadmap taken all the way through, eight guides and eight quizzes, costs about <b>RM0.03</b>.</p>
+      <p style="font-size: 19px; color: var(--ink-3);">Groq gpt-oss-20b at $0.075 / $0.30 per million tokens, converted at 4.07 MYR/USD, measured against the app's own token limits.</p>
+    </div>
+    <div class="card">
+      <h3>Why it holds</h3>
+      <p style="margin-bottom: 10px;">A heavy Plus user finishing 20 roadmaps a month costs about <b>RM0.62</b> to serve, against RM12 of revenue.</p>
+      <p style="font-size: 19px; color: var(--ink-3);">A free user on one active roadmap costs at most RM0.03 and is capped by design. Paid tiers also remove the free-tier daily token ceiling that limits the instance today.</p>
     </div>
   </div>
   <div class="foot"><span>FOKUS</span><span>12</span></div>

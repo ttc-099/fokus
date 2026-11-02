@@ -187,9 +187,19 @@ const ModuleView = () => {
       </div>
 
       <div className="module-steps">
-        {m.resources?.videos?.length ? <span className="module-step">1 Watch</span> : null}
-        <span className="module-step">{m.resources?.videos?.length ? 2 : 1} Read</span>
-        <span className="module-step">{m.resources?.videos?.length ? 3 : 2} Check</span>
+        {(() => {
+          // number the steps from whatever this module actually has
+          let n = 0;
+          const steps: string[] = [];
+          if (m.resources?.videos?.length) steps.push("Watch");
+          steps.push("Read");
+          if (m.detail?.worked?.steps?.length) steps.push("Try it");
+          steps.push("Check");
+          return steps.map((label) => {
+            n += 1;
+            return <span className="module-step" key={label}>{n} {label}</span>;
+          });
+        })()}
       </div>
 
       <section className="section-card">
@@ -225,6 +235,23 @@ const ModuleView = () => {
         {m.detail?.v === 2 && m.detail.content ? (
           <>
             <ProseGuide text={m.detail.content} />
+            {m.detail.worked && m.detail.worked.steps.length > 1 && (
+              <div className="worked">
+                <p className="worked-label">Worked example</p>
+                <p className="worked-setup">{m.detail.worked.setup}</p>
+                <ol className="worked-steps">
+                  {m.detail.worked.steps.map((st, si) => (
+                    <li key={si}><span className="worked-num">{si + 1}</span><span>{st}</span></li>
+                  ))}
+                </ol>
+                {m.detail.worked.result && (
+                  <p className="worked-result">{m.detail.worked.result}</p>
+                )}
+                {m.detail.worked.watchout && (
+                  <p className="worked-watchout"><IconAlert size={15} /> {m.detail.worked.watchout}</p>
+                )}
+              </div>
+            )}
             {sources.length > 0 && (
               <>
                 <h4>Sources</h4>

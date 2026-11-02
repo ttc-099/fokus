@@ -2,9 +2,8 @@
 import re, subprocess, os, glob, sys
 from PIL import Image
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "deck.html")
-OUT = HERE
+SRC = "/opt/data/workspace/fokus/docs/pitch/deck.html"
+OUT = "/opt/data/workspace/fokus/docs/pitch"
 
 html = open(SRC, encoding="utf-8").read()
 style = re.search(r"<style>(.*?)</style>", html, re.S).group(1)
@@ -21,11 +20,12 @@ chunks = [body[marks[i]:(marks[i + 1] if i + 1 < len(marks) else len(body))]
 chunks = [c for c in chunks if c.count("<div") and len(c) > 200]
 print("slides:", len(chunks))
 
-for f in glob.glob(f"{OUT}/slide-*.png"):
-    os.remove(f)
-
 rendered = []
+START = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+END = int(sys.argv[2]) if len(sys.argv) > 2 else len(chunks)
 for i, chunk in enumerate(chunks, start=1):
+    if not (START <= i <= END):
+        continue
     page = (f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
             f'<style>{style}</style></head><body>{chunk}</body></html>')
     path = f"{OUT}/slide-{i:02d}.html"
@@ -46,7 +46,12 @@ for i, chunk in enumerate(chunks, start=1):
     rendered.append(png)
 
 if rendered:
-    imgs = [Image.open(p).convert("RGB") for p in rendered]
+    missing = [f"{OUT}/slide-{i:02d}.png" for i in range(1, len(chunks) + 1)
+               if not os.path.exists(f"{OUT}/slide-{i:02d}.png")]
+    if missing:
+        print("not assembling a partial pdf, missing:", missing)
+        raise SystemExit(1)
+    imgs = [Image.open(f"{OUT}/slide-{i:02d}.png").convert("RGB") for i in range(1, len(chunks) + 1)]
     imgs[0].save(f"{OUT}/fokus-pitch-deck.pdf", save_all=True,
                  append_images=imgs[1:], resolution=96)
     print("pdf pages:", len(imgs), os.path.getsize(f"{OUT}/fokus-pitch-deck.pdf") // 1024, "KB")
