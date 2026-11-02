@@ -16,450 +16,467 @@
 
   .slide {
     width: 1920px; height: 1080px; position: relative; overflow: hidden;
-    background: var(--card); padding: 84px 110px 130px;
+    background: var(--card); padding: 80px 110px 128px;
     display: flex; flex-direction: column; justify-content: center;
   }
-  /* footers pin to the bottom, content centres in the space above */
-  .slide > .foot { justify-content: space-between; }
   .slide.dark { background: #0f172a; color: #fff; }
   .slide.tint { background: var(--blue-soft); }
 
-  .eyebrow { flex-shrink: 0; font-size: 22px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 18px; }
+  .eyebrow { flex-shrink: 0; font-size: 21px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
   .dark .eyebrow { color: #93c5fd; }
-  h1 { font-size: 88px; line-height: 1.03; letter-spacing: -0.03em; font-weight: 800; }
-  h2 { font-size: 56px; line-height: 1.08; letter-spacing: -0.025em; font-weight: 800; margin-bottom: 26px; }
-  .lede { font-size: 28px; color: var(--ink-2); max-width: 1320px; }
+  h1 { font-size: 84px; line-height: 1.04; letter-spacing: -0.03em; font-weight: 800; }
+  h2 { font-size: 52px; line-height: 1.08; letter-spacing: -0.025em; font-weight: 800; margin-bottom: 22px; }
+  .lede { font-size: 26px; color: var(--ink-2); max-width: 1340px; }
   .dark .lede { color: #bcd0ee; }
   .foot {
-    position: absolute; left: 110px; right: 110px; bottom: 46px;
+    position: absolute; left: 110px; right: 110px; bottom: 44px;
     display: flex; justify-content: space-between; align-items: center;
-    font-size: 19px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 16px;
+    font-size: 18px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 14px;
   }
   .dark .foot { color: #7b8fb3; border-color: #23324b; }
 
   .wordmark { display: inline-flex; align-items: center; gap: 16px; }
-  .mark {
-    width: 62px; height: 62px; border-radius: 15px; background: var(--blue);
-    color: #fff; font-weight: 800; font-size: 34px; display: grid; place-items: center;
-  }
+  .mark { width: 62px; height: 62px; border-radius: 15px; background: var(--blue); color: #fff; font-weight: 800; font-size: 34px; display: grid; place-items: center; }
   .wordmark span { font-size: 32px; font-weight: 800; letter-spacing: 0.02em; }
 
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
 
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 34px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 30px; }
   .dark .card { background: #16233c; border-color: #24344f; }
-  .card h3 { font-size: 30px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
-  .card p { font-size: 22px; color: var(--ink-2); }
+  .card h3 { font-size: 27px; font-weight: 700; margin-bottom: 9px; letter-spacing: -0.01em; }
+  .card p { font-size: 21px; color: var(--ink-2); }
   .dark .card p { color: #b4c4dd; }
 
-  .stat { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 30px 32px; }
-  .stat .n { font-size: 66px; font-weight: 800; letter-spacing: -0.03em; color: var(--blue-dark); line-height: 1.05; }
-  .stat .l { font-size: 20px; color: var(--ink-2); margin-top: 8px; }
-  .stat.plain .n { color: var(--ink); }
+  .kpi { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px 30px; }
+  .kpi .n { font-size: 62px; font-weight: 800; letter-spacing: -0.03em; color: var(--blue-dark); line-height: 1.02; }
+  .kpi .l { font-size: 20px; color: var(--ink-2); margin-top: 8px; }
+  .kpi .s { font-size: 16px; color: var(--ink-3); margin-top: 10px; }
+  .kpi.plain .n { color: var(--ink); }
 
   .shot { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--canvas); box-shadow: 0 18px 44px rgba(15,23,42,0.16); }
   .shot img { display: block; width: 100%; }
-  .shot-bar { height: 34px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 16px; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; }
-  .url { margin-left: 12px; font-size: 17px; color: var(--ink-3); background: var(--canvas); border-radius: 999px; padding: 2px 14px; }
+  .shot-bar { height: 32px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; padding: 0 15px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e8f0; }
+  .url { margin-left: 12px; font-size: 16px; color: var(--ink-3); background: var(--canvas); border-radius: 999px; padding: 2px 13px; }
 
-  .pill { display: inline-flex; align-items: center; gap: 10px; background: var(--blue-soft); border: 1px solid var(--blue-border); color: var(--blue-dark); font-size: 21px; font-weight: 700; padding: 9px 20px; border-radius: 999px; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; background: var(--blue-soft); border: 1px solid var(--blue-border); color: var(--blue-dark); font-size: 20px; font-weight: 700; padding: 8px 18px; border-radius: 999px; }
   .dark .pill { background: #1c2f4f; border-color: #2f4a75; color: #cfe0ff; }
 
-  .num { width: 46px; height: 46px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 22px; margin-bottom: 16px; }
-  .num.ghost { background: #e2e8f0; color: var(--ink-3); }
+  .num { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 21px; margin-bottom: 14px; }
 
   ul { list-style: none; }
-  ul li { font-size: 23px; color: var(--ink-2); padding: 9px 0 9px 34px; position: relative; }
-  ul li::before { content: ""; position: absolute; left: 4px; top: 20px; width: 11px; height: 11px; border-radius: 50%; background: var(--blue-border); }
+  ul li { font-size: 22px; color: var(--ink-2); padding: 8px 0 8px 32px; position: relative; }
+  ul li::before { content: ""; position: absolute; left: 3px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--blue-border); }
   .dark ul li { color: #b4c4dd; }
 
-  /* pipeline flow */
-  .flow { display: flex; align-items: stretch; gap: 0; margin-top: 10px; }
-  .flow .step { flex: 1; position: relative; padding: 0 18px; }
-  .flow .step .bar { height: 8px; border-radius: 6px; background: var(--blue); margin-bottom: 22px; }
+  /* pipeline */
+  .flow { display: flex; align-items: stretch; }
+  .flow .step { flex: 1; padding: 0 16px; }
+  .flow .step .bar { height: 7px; border-radius: 6px; background: var(--blue); margin-bottom: 20px; }
   .flow .step:nth-child(2) .bar { background: #3b82f6; }
   .flow .step:nth-child(3) .bar { background: #60a5fa; }
   .flow .step:nth-child(4) .bar { background: #93c5fd; }
   .flow .step:nth-child(5) .bar { background: var(--blue-border); }
-  .flow h4 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
-  .flow p { font-size: 20px; color: var(--ink-2); }
-  .flow .who { font-size: 17px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .flow h4 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .flow p { font-size: 19px; color: var(--ink-2); }
+  .flow .who { font-size: 16px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
 
-  .tier { display: grid; grid-template-columns: 170px 1fr 300px; gap: 26px; align-items: center; padding: 26px 0; border-bottom: 1px solid var(--line); }
+  /* ladder */
+  .tier { display: grid; grid-template-columns: 130px 1fr 260px; gap: 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--line); }
   .tier:last-child { border-bottom: none; }
-  .tier .badge { font-size: 18px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px; border-radius: 999px; text-align: center; }
+  .tier .badge { font-size: 17px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 12px; border-radius: 999px; text-align: center; }
   .tier .now { background: var(--blue); color: #fff; }
   .tier .next { background: #e2e8f0; color: var(--ink-2); }
   .tier .later { background: #f1f5f9; color: var(--ink-3); border: 1px solid var(--line); }
-  .tier h4 { font-size: 30px; font-weight: 700; margin-bottom: 4px; }
-  .tier p { font-size: 21px; color: var(--ink-2); }
-  .tier .why { font-size: 19px; color: var(--ink-3); text-align: right; }
+  .tier h4 { font-size: 27px; font-weight: 700; margin-bottom: 3px; }
+  .tier p { font-size: 20px; color: var(--ink-2); }
+  .tier .why { font-size: 18px; color: var(--ink-3); text-align: right; }
 
-  .quote { font-size: 44px; line-height: 1.28; font-weight: 700; letter-spacing: -0.02em; max-width: 1400px; }
-  .attrib { font-size: 21px; color: var(--ink-3); margin-top: 26px; }
+  /* scenario split */
+  .vs-grid { display: grid; grid-template-columns: 1fr 72px 1fr; gap: 22px; align-items: stretch; }
+  .vs { display: grid; place-items: center; font-size: 34px; font-weight: 800; color: var(--ink-3); }
+  .panel { border-radius: 18px; padding: 26px 28px; }
+  .panel.bad { background: #fef2f2; border: 1px solid #fecaca; }
+  .panel.good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .panel h4 { font-size: 18px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .panel.bad h4 { color: #b91c1c; }
+  .panel.good h4 { color: #15803d; }
+  .panel p { font-size: 21px; }
+  .panel.bad p { color: #7f1d1d; }
+  .panel.good p { color: #14532d; }
+
+  /* pricing */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .price { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 28px 30px; display: flex; flex-direction: column; }
+  .price.featured { border: 2px solid var(--blue); box-shadow: 0 14px 34px rgba(37,99,235,0.13); }
+  .price .tiername { font-size: 17px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .price .amount { font-size: 52px; font-weight: 800; letter-spacing: -0.03em; margin: 6px 0 2px; }
+  .price .amount small { font-size: 21px; font-weight: 600; color: var(--ink-3); letter-spacing: 0; }
+  .price .sub { font-size: 18px; color: var(--ink-3); margin-bottom: 16px; }
+  .price ul li { font-size: 20px; padding: 6px 0 6px 30px; }
+  .price ul li::before { top: 16px; }
+  .bench { margin-top: 22px; display: flex; gap: 14px; align-items: center; font-size: 20px; color: var(--ink-2); flex-wrap: wrap; }
+  .bench b { color: var(--ink); }
+  .fine { font-size: 17px; color: var(--ink-3); }
 </style>
 </head>
 <body>
 
-<!-- 1 · title -->
+<!-- 1 -->
 <div class="slide dark">
-  <div class="wordmark" style="margin-bottom: 70px;">
-    <span class="mark">F</span><span>FOKUS</span>
-  </div>
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-    <p class="eyebrow">Learn anything, on purpose</p>
-    <h1>Type any topic.<br>Get a learning path made for you.</h1>
-    <p class="lede" style="margin-top: 30px; max-width: 1180px;">
-      FOKUS turns a topic you want to learn into an eight-module path, then walks you through it:
-      read the guide, watch a real video, pass a short check, move on.
+  <div class="wordmark" style="margin-bottom: 54px;"><span class="mark">F</span><span>FOKUS</span></div>
+  <div>
+    <p class="eyebrow">From a learner, for learners</p>
+    <h1>To lower the 90% failure rate<br>of self-initiated learning.</h1>
+    <p class="lede" style="margin-top: 26px; max-width: 1240px;">
+      Type any topic, get an eight-module path made for you, then work through it: watch, read,
+      check, move on. Higher completion, through roadmap-based learning.
     </p>
   </div>
-  <div class="foot"><span>Student self-study, first</span><span>Pitch deck · v2</span></div>
+  <div class="foot"><span>FOKUS</span><span>Pitch deck · v3</span></div>
 </div>
 
-<!-- 2 · problem -->
+<!-- 2 -->
 <div class="slide">
   <p class="eyebrow">The problem</p>
-  <h2>Most people who decide to teach themselves something never finish it.</h2>
-  <p class="lede" style="margin-bottom: 46px;">
-    Self-paced learning asks a beginner to do two jobs at once: work out what to learn, and keep
-    themselves honest while learning it. Most fail at the first, so the second never matters.
+  <h2>Why does this happen?</h2>
+  <p class="lede" style="margin-bottom: 34px;">
+    85–90% of self-initiating learners fail to complete their online learning goals or courses
+    (Mukherjee &amp; Kandiah, 2023). The failure is structural, not a lack of effort.
   </p>
   <div class="grid-3">
-    <div class="stat">
-      <div class="n">85–90%</div>
-      <div class="l">of self-initiating learners fail to complete their online learning goals or courses (Mukherjee &amp; Kandiah, 2023)</div>
-    </div>
-    <div class="card">
-      <h3>No map</h3>
-      <p>A search bar gives you 40 tabs, not an order. Beginners cannot tell which resource is step one and which is year three.</p>
-    </div>
-    <div class="card">
-      <h3>No feedback</h3>
-      <p>Watching a video feels like progress but proves nothing. Without a check, nothing tells you whether it landed.</p>
-    </div>
+    <div class="kpi"><div class="n">85–90%</div><div class="l">of self-initiating learners never finish what they start</div><div class="s">Mukherjee &amp; Kandiah, 2023</div></div>
+    <div class="card"><h3>The self-paced problem</h3><p>Nobody is waiting for you. There is no next step scheduled, so the week you get busy is the week it ends.</p></div>
+    <div class="card"><h3>No gentle entry</h3><p>Beginners meet the hardest material first, because search ranks popularity, not order. Then they assume they cannot do it.</p></div>
   </div>
-  <div style="margin-top: 44px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 26px; align-items: center;">
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 18px; padding: 26px 30px;">
-      <p style="font-size: 19px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #b91c1c; margin-bottom: 10px;">How self-study usually goes</p>
-      <p style="font-size: 23px; color: #7f1d1d;">Search a topic, open twelve tabs, watch whatever is longest, stop after a week.</p>
-    </div>
-    <div style="font-size: 34px; color: var(--ink-3); font-weight: 700;">vs</div>
-    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 18px; padding: 26px 30px;">
-      <p style="font-size: 19px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #15803d; margin-bottom: 10px;">With a path</p>
-      <p style="font-size: 23px; color: #14532d;">Open module one, do the three steps, check it landed, move to module two.</p>
-    </div>
+  <div style="margin-top: 30px; background: var(--blue-soft); border: 1px solid var(--blue-border); border-radius: 18px; padding: 24px 28px;">
+    <p style="font-size: 25px; font-weight: 700; color: var(--blue-dark);">How can we lower this fail rate? Give the learner an order they can follow, and a way to know it landed.</p>
+  </div>
+  <p class="fine" style="margin: 34px 0 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">What happens without a path</p>
+  <div class="flow" style="opacity: 0.95;">
+    <div class="step" style="padding-left: 0;"><div class="bar" style="background: #cbd5e1;"></div><h4 style="font-size: 23px;">Searches the topic</h4><p>The first step is a search box with no order to it.</p></div>
+    <div class="step"><div class="bar" style="background: #cbd5e1;"></div><h4 style="font-size: 23px;">Opens a dozen tabs</h4><p>Articles, videos, a paid course, three Reddit threads.</p></div>
+    <div class="step"><div class="bar" style="background: #cbd5e1;"></div><h4 style="font-size: 23px;">Starts with the longest</h4><p>Length feels like rigour, so the hardest thing comes first.</p></div>
+    <div class="step"><div class="bar" style="background: #cbd5e1;"></div><h4 style="font-size: 23px;">Stops</h4><p>No schedule, no check, no next step. The tab closes.</p></div>
   </div>
   <div class="foot"><span>FOKUS</span><span>2</span></div>
 </div>
 
-<!-- 3 · the specific user, with a denominator -->
+<!-- 3 -->
 <div class="slide tint">
-  <p class="eyebrow">Who we start with</p>
-  <h2>Students who already want to learn something specific.</h2>
-  <p class="lede" style="margin-bottom: 40px;">
-    Not the whole learning market. The person who has already decided: I want to learn watercolor,
-    Haskell, chess openings, lab safety. They need a plan, not motivation.
+  <p class="eyebrow">Who is affected?</p>
+  <h2>Our market, to start.</h2>
+  <p class="lede" style="margin-bottom: 32px;">
+    Two segments, same job: they have already decided to learn something and have no structure
+    for it.
   </p>
   <div class="grid-2" style="align-items: start;">
-    <div>
-      <div class="card" style="margin-bottom: 22px;">
-        <h3>What they look like</h3>
-        <ul>
-          <li>University or college student, 18–24</li>
-          <li>Already self-studying outside coursework</li>
-          <li>Has a topic in mind, no structure for it</li>
-          <li>Studies in short sessions, on a phone as often as a laptop</li>
-        </ul>
-      </div>
-      <div class="pill">One clear job: turn my topic into an order I can follow</div>
+    <div class="card">
+      <h3>University student</h3>
+      <p style="margin-bottom: 12px;">Studies outside coursework, on a laptop and a phone, around deadlines.</p>
+      <p style="font-size: 19px; color: var(--ink-3);"><b>Issue:</b> lack of accountability, study burnout.</p>
     </div>
-    <div>
-      <div class="card">
-        <h3>Why this group first</h3>
-        <p style="margin-bottom: 14px;">
-          They are reachable (classmates, campus, student communities), they give feedback in
-          minutes rather than quarters, and their failure mode is exactly what FOKUS fixes.
-        </p>
-        <p>
-          Every later user — a classroom, a training team, a whole faculty — needs the same core
-          thing working first: a topic in, a usable path out.
-        </p>
-      </div>
+    <div class="card">
+      <h3>Young adult</h3>
+      <p style="margin-bottom: 12px;">Learning a skill for work or a hobby, in short sessions after hours.</p>
+      <p style="font-size: 19px; color: var(--ink-3);"><b>Issue:</b> distraction from existing work and responsibilities.</p>
     </div>
   </div>
+  <div class="grid-3" style="margin-top: 26px;">
+    <div class="kpi plain"><div class="n">2</div><div class="l">segments in scope for the beta</div></div>
+    <div class="kpi plain"><div class="n">1</div><div class="l">job to be done: topic in, usable order out</div></div>
+    <div class="kpi plain"><div class="n">0</div><div class="l">new habits required of the learner</div></div>
+  </div>
+  <p class="fine" style="margin-top: 22px;">
+    Segment split follows the types-of-learners findings summarised from Pepperdine University,
+    DigitalDefynd and the World Economic Forum. We are not quoting a market size we cannot
+    defend; the beta measures our own conversion.
+  </p>
   <div class="foot"><span>FOKUS</span><span>3</span></div>
 </div>
 
-<!-- 4 · solution -->
+<!-- 4 -->
 <div class="slide">
-  <p class="eyebrow">The solution</p>
-  <h2>A map, then a walk through it.</h2>
-  <p class="lede" style="margin-bottom: 34px;">
-    Every roadmap is eight modules in order. Each module is three steps: watch, read, check.
-    The path is the interface.
+  <p class="eyebrow">The trend from now</p>
+  <h2>The easy answer is already in their hands.</h2>
+  <p class="lede" style="margin-bottom: 30px;">
+    AI use among students is not a future trend, it is the default. Reports from KPMG,
+    FrontiersIn and the Journal of Nusantara Studies (JONUS) point the same direction, and the
+    newest numbers are large.
   </p>
-  <div class="grid-2" style="grid-template-columns: 1.15fr 1fr; align-items: center;">
-    <div class="shot">
-      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / roadmap</span></div>
-      <img src="shots/course-overview.png" alt="A watercolor painting roadmap as a numbered timeline, module one done, module two up next">
-    </div>
-    <div>
-      <div class="card" style="margin-bottom: 18px;">
-        <h3>Numbered, not endless</h3>
-        <p>Eight modules, in an order. You always know what step you are on and what comes next.</p>
-      </div>
-      <div class="card" style="margin-bottom: 18px;">
-        <h3>Checked, not assumed</h3>
-        <p>Each module ends with three questions. Two right and the next module unlocks.</p>
-      </div>
-      <div class="card">
-        <h3>Saved, not lost</h3>
-        <p>Progress is stored per account, and any roadmap can be kept on the device for offline reading.</p>
-      </div>
-    </div>
+  <div class="grid-3">
+    <div class="kpi"><div class="n">83%</div><div class="l">of students use AI in their studies regularly, half of them weekly or daily</div><div class="s">KPMG global student survey, data Nov 2024 – Jan 2025</div></div>
+    <div class="kpi"><div class="n">68%</div><div class="l">use AI specifically to complete coursework assignments (n=119, Malaysian university)</div><div class="s">Sunway University study, ACM, 2023</div></div>
+    <div class="kpi"><div class="n">89%</div><div class="l">of students use free public AI tools rather than ones their institution provides</div><div class="s">KPMG, same survey</div></div>
+  </div>
+  <div class="grid-2" style="margin-top: 26px; gap: 26px;">
+    <div class="card"><h3>What that means</h3><p>The habit is already formed, and it is formed around getting the answer, not learning the material. Anyone building learning tools now competes with a chatbot that answers instantly.</p></div>
+    <div class="card"><h3>What it opens</h3><p>Students do not need to be convinced to use AI for study. They need it pointed at completion instead of answers. That is a positioning problem we can win.</p></div>
+  </div>
+  <div style="margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px;">
+    <p class="fine"><b>Sources:</b> KPMG, <i>Trust, attitudes and use of artificial intelligence</i> (global student survey, fieldwork Nov 2024 – Jan 2025). Sunway University / ACM, <i>Beyond the Textbook: ChatGPT patterns of use among students in higher education</i>, 2023, n=119. Nasidi et al., <i>Factors influencing AI adoption among Malaysian students</i>, Journal of Nusantara Studies 10(2), 475–493, 2025, n=224.</p>
   </div>
   <div class="foot"><span>FOKUS</span><span>4</span></div>
 </div>
 
-<!-- 5 · the module -->
+<!-- 5 -->
 <div class="slide tint">
-  <p class="eyebrow">Inside a module</p>
-  <h2>Watch, read, check. Then move on.</h2>
-  <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
-    <div>
-      <div class="shot">
-        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / module 2</span></div>
-        <img src="shots/course-module.png" alt="A module page with a course sidebar, a video, a tutor-written guide and a check">
-      </div>
+  <p class="eyebrow">Scenario: “easy way out”</p>
+  <h2>Are they really learning?</h2>
+  <div class="vs-grid" style="margin-top: 6px;">
+    <div class="panel bad">
+      <h4>What happens now</h4>
+      <p style="margin-bottom: 12px;">Paste the assignment, take the answer, submit it. Thirty seconds, no friction, nothing retained.</p>
+      <p style="font-size: 19px; opacity: 0.85;">The work is completed. The learner is not.</p>
     </div>
-    <div>
-      <div class="shot" style="margin-bottom: 26px;">
-        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / module 2 · check</span></div>
-        <img src="shots/course-check.png" alt="Three multiple choice questions with correct answers marked green and a pass line">
-      </div>
-      <div class="grid-3" style="gap: 16px;">
-        <div class="card" style="padding: 22px;">
-          <h3 style="font-size: 24px;">1 Watch</h3>
-          <p style="font-size: 19px;">Real videos, picked for this module.</p>
-        </div>
-        <div class="card" style="padding: 22px;">
-          <h3 style="font-size: 24px;">2 Read</h3>
-          <p style="font-size: 19px;">A tutor-style guide with sources.</p>
-        </div>
-        <div class="card" style="padding: 22px;">
-          <h3 style="font-size: 24px;">3 Check</h3>
-          <p style="font-size: 19px;">Three questions, instant feedback.</p>
-        </div>
-      </div>
+    <div class="vs">vs</div>
+    <div class="panel good">
+      <h4>What FOKUS does differently</h4>
+      <p style="margin-bottom: 12px;">The path is ordered, the module ends in three questions, and the next module waits until you pass.</p>
+      <p style="font-size: 19px; opacity: 0.85;">Same AI, pointed at retrieval instead of output.</p>
     </div>
+  </div>
+  <div class="grid-3" style="margin-top: 30px;">
+    <div class="card"><h3>It answers</h3><p>A chatbot gives you the thing you asked for and ends there.</p></div>
+    <div class="card"><h3>It asks back</h3><p>Every module has a check, so you cannot skip past what you did not absorb.</p></div>
+    <div class="card"><h3>It remembers</h3><p>Progress, next module and completion live in the account, not in a chat log.</p></div>
+  </div>
+  <div style="margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;">
+    <div class="kpi plain" style="padding: 20px 24px;"><div class="n" style="font-size: 40px;">3</div><div class="l">questions, drawn from that module's own guide</div></div>
+    <div class="kpi plain" style="padding: 20px 24px;"><div class="n" style="font-size: 40px;">2/3</div><div class="l">correct to unlock the next module</div></div>
+    <div class="kpi plain" style="padding: 20px 24px;"><div class="n" style="font-size: 40px;">1</div><div class="l">explanation per answer, right or wrong</div></div>
+    <div class="kpi plain" style="padding: 20px 24px;"><div class="n" style="font-size: 40px;">0</div><div class="l">way to skip a check you have not passed</div></div>
   </div>
   <div class="foot"><span>FOKUS</span><span>5</span></div>
 </div>
 
-<!-- 6 · how it is built (pipeline) -->
+<!-- 6 -->
 <div class="slide">
-  <p class="eyebrow">How it works under the hood</p>
-  <h2>One request, five steps, and nothing invented.</h2>
-  <p class="lede" style="margin-bottom: 34px;">
-    Recommendations are real: videos are scraped from YouTube search and verified, courses are
-    platform search links. No fabricated titles, ids or badges.
+  <p class="eyebrow">The solution</p>
+  <h2>Better with a map.</h2>
+  <p class="lede" style="margin-bottom: 32px;">
+    Eight modules in order, each one three steps, progress kept. The path is the interface: you
+    always know where you are and what is next.
   </p>
-  <div class="flow">
-    <div class="step">
-      <div class="bar"></div>
-      <p class="who">Learner</p>
-      <h4>Types a topic</h4>
-      <p>Topic gate blocks key-spam and non-learnable input before any model call.</p>
+  <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 34px; align-items: start;">
+    <div class="card">
+      <h3>Why: an accessible, simple UI</h3>
+      <p>One input, one path, one next step. No dashboards to configure, no playlists to curate,
+      no options before the first module opens. It works on a phone in one hand.</p>
     </div>
-    <div class="step">
-      <div class="bar"></div>
-      <p class="who">System</p>
-      <h4>Researches</h4>
-      <p>Pulls live Wikipedia sources for the topic, and for each module when it opens.</p>
-    </div>
-    <div class="step">
-      <div class="bar"></div>
-      <p class="who">Model</p>
-      <h4>Writes 8 modules</h4>
-      <p>Ordered beginner to advanced, each with a one-line scope and a full guide on first open.</p>
-    </div>
-    <div class="step">
-      <div class="bar"></div>
-      <p class="who">System</p>
-      <h4>Finds resources</h4>
-      <p>Real YouTube results, verified; course search links per platform.</p>
-    </div>
-    <div class="step">
-      <div class="bar"></div>
-      <p class="who">Model</p>
-      <h4>Builds the check</h4>
-      <p>Three questions per module, generated once, stored, scored on the client.</p>
+    <div class="card">
+      <h3>Why: to ensure it actually landed</h3>
+      <p>Each module ends with three generated questions drawn from that module's own guide. Two
+      right and the next module unlocks, so completion means comprehension rather than exposure.</p>
     </div>
   </div>
-  <div class="grid-4" style="margin-top: 40px;">
-    <div class="stat plain"><div class="n">8</div><div class="l">modules per roadmap</div></div>
-    <div class="stat plain"><div class="n">~2.4s</div><div class="l">average generation time per roadmap</div></div>
-    <div class="stat plain"><div class="n">1</div><div class="l">model call per generated artefact, cached after</div></div>
-    <div class="stat plain"><div class="n">0</div><div class="l">fabricated links by design</div></div>
+  <div class="grid-4" style="margin-top: 30px;">
+    <div class="kpi plain"><div class="n">8</div><div class="l">modules per path</div></div>
+    <div class="kpi plain"><div class="n">3</div><div class="l">steps per module: watch, read, check</div></div>
+    <div class="kpi plain"><div class="n">3</div><div class="l">questions per check</div></div>
+    <div class="kpi plain"><div class="n">2</div><div class="l">correct to unlock the next module</div></div>
   </div>
-  <div class="foot"><span>Replace the model step with any provider; the contract is fixed JSON.</span><span>6</span></div>
+  <div class="foot"><span>FOKUS</span><span>6</span></div>
 </div>
 
-<!-- 7 · expansion ladder -->
+<!-- 7 -->
 <div class="slide tint">
-  <p class="eyebrow">Where this goes</p>
-  <h2>One engine, three audiences, in order.</h2>
-  <p class="lede" style="margin-bottom: 30px;">
-    Each stage reuses the same topic-in, path-out core. We move only when the stage before it is
-    actually working for its users.
-  </p>
-  <div>
-    <div class="tier">
-      <span class="badge now">Now</span>
-      <div>
-        <h4>Students teaching themselves</h4>
-        <p>One person, one topic, one account. Personal progress and offline copies.</p>
-      </div>
-      <p class="why">Shipping</p>
+  <p class="eyebrow">The product</p>
+  <h2>A real roadmap, on a real account.</h2>
+  <div class="grid-2" style="grid-template-columns: 1.2fr 1fr; align-items: center; gap: 34px;">
+    <div class="shot">
+      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / roadmap</span></div>
+      <img src="shots/course-overview.png" alt="A roadmap shown as a numbered timeline with one module done and the next marked up next">
     </div>
-    <div class="tier">
-      <span class="badge next">Next</span>
-      <div>
-        <h4>Study groups and small cohorts</h4>
-        <p>Shared roadmaps, a class code, and a simple view of who is on which module.</p>
-      </div>
-      <p class="why">After beta feedback</p>
-    </div>
-    <div class="tier">
-      <span class="badge later">Later</span>
-      <div>
-        <h4>Classrooms and trainers</h4>
-        <p>Instructor-authored paths, assignment deadlines, and per-module completion reporting.</p>
-      </div>
-      <p class="why">Needs accounts for non-learners</p>
-    </div>
-    <div class="tier">
-      <span class="badge later">Later</span>
-      <div>
-        <h4>Institutions</h4>
-        <p>Faculty-wide deployment, SSO, and content review before a path reaches students.</p>
-      </div>
-      <p class="why">Needs the stage above to be proven</p>
+    <div>
+      <div class="card" style="margin-bottom: 16px;"><h3>Numbered, not endless</h3><p>Eight modules in a fixed order, with the one you are on marked.</p></div>
+      <div class="card" style="margin-bottom: 16px;"><h3>Checked, not assumed</h3><p>The check decides when the next module opens.</p></div>
+      <div class="card"><h3>Kept, not lost</h3><p>Progress per account, and any roadmap can be saved to the device for offline reading.</p></div>
     </div>
   </div>
   <div class="foot"><span>FOKUS</span><span>7</span></div>
 </div>
 
-<!-- 8 · what ships now -->
+<!-- 8 -->
 <div class="slide">
-  <p class="eyebrow">What is built today</p>
-  <h2>Not a mockup. A working account-based app.</h2>
-  <div class="grid-2" style="grid-template-columns: 1.1fr 1fr; align-items: start; gap: 40px;">
-    <div>
-      <div class="grid-2" style="gap: 20px;">
-        <div class="card">
-          <h3>Learner side</h3>
-          <ul style="margin-top: 8px;">
-            <li>Accounts, saved roadmaps, progress</li>
-            <li>Course sidebar with the module tree</li>
-            <li>Watch, read, check per module</li>
-            <li>Save any roadmap for offline reading</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>Operator side</h3>
-          <ul style="margin-top: 8px;">
-            <li>Usage, cost and token tracking</li>
-            <li>Per-user activity and roadmaps</li>
-            <li>Content list with progress and export</li>
-            <li>Refusals and rate limits visible</li>
-          </ul>
-        </div>
-      </div>
-      <div class="card" style="margin-top: 20px;">
-        <h3>Also shipped</h3>
-        <p>Installable as an app on a phone, an Android build, and a public landing page that
-        shows a real roadmap building itself.</p>
-      </div>
-    </div>
+  <p class="eyebrow">Inside a module</p>
+  <h2>Watch, read, check. Then move on.</h2>
+  <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
     <div class="shot">
-      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / admin</span></div>
-      <img src="shots/admin-overview.png" alt="The admin dashboard with instance stats, a roadmaps per day chart and a recent roadmaps list">
+      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / module 2</span></div>
+      <img src="shots/course-module.png" alt="A module page with the course sidebar, a video, a written guide and a check">
+    </div>
+    <div>
+      <div class="shot" style="margin-bottom: 20px;">
+        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / module 2 · check</span></div>
+        <img src="shots/course-check.png" alt="Three multiple choice questions with the correct answers marked and a pass threshold">
+      </div>
+      <div class="grid-3" style="gap: 14px;">
+        <div class="card" style="padding: 18px;"><h3 style="font-size: 21px;">1 Watch</h3><p style="font-size: 17px;">Real videos for this module.</p></div>
+        <div class="card" style="padding: 18px;"><h3 style="font-size: 21px;">2 Read</h3><p style="font-size: 17px;">A guide with sources.</p></div>
+        <div class="card" style="padding: 18px;"><h3 style="font-size: 21px;">3 Check</h3><p style="font-size: 17px;">Three questions, instant.</p></div>
+      </div>
     </div>
   </div>
   <div class="foot"><span>FOKUS</span><span>8</span></div>
 </div>
 
-<!-- 9 · limits, honestly -->
+<!-- 9 -->
+<div class="slide tint">
+  <p class="eyebrow">The product in code</p>
+  <h2>One request, five steps, nothing invented.</h2>
+  <p class="lede" style="margin-bottom: 28px;">
+    Recommendations are real: videos are scraped from YouTube search and verified, courses are
+    platform search links. No fabricated titles, ids or badges.
+  </p>
+  <div class="flow">
+    <div class="step"><div class="bar"></div><p class="who">Learner</p><h4>Types a topic</h4><p>A gate blocks key-spam and non-learnable input before any model call.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">System</p><h4>Researches</h4><p>Pulls live Wikipedia sources for the topic, and per module when it opens.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Writes 8 modules</h4><p>Ordered beginner to advanced, each with a scope line and a full guide.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">System</p><h4>Finds resources</h4><p>Real YouTube results, verified; course search links per platform.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Builds the check</h4><p>Three questions per module, generated once and stored.</p></div>
+  </div>
+  <div class="grid-4" style="margin-top: 32px;">
+    <div class="kpi plain"><div class="n">~2.4s</div><div class="l">average roadmap generation</div></div>
+    <div class="kpi plain"><div class="n">1</div><div class="l">model call per artefact, cached after</div></div>
+    <div class="kpi plain"><div class="n">React + Python</div><div class="l">SQLite, one process, installable as an app</div></div>
+    <div class="kpi plain"><div class="n">Swap</div><div class="l">the model provider, the JSON contract stays</div></div>
+  </div>
+  <div class="foot"><span>FOKUS</span><span>9</span></div>
+</div>
+
+<!-- 10 · business model -->
+<div class="slide">
+  <p class="eyebrow">Business model</p>
+  <h2>Priced under what students already pay.</h2>
+  <div class="price-grid" style="margin-top: 4px;">
+    <div class="price">
+      <p class="tiername">Free</p>
+      <p class="amount">RM0</p>
+      <p class="sub">for trying it properly</p>
+      <ul>
+        <li>One active roadmap</li>
+        <li>All 8 modules and checks</li>
+        <li>Progress saved to the account</li>
+        <li>Offline copy of that roadmap</li>
+      </ul>
+    </div>
+    <div class="price featured">
+      <p class="tiername">Plus</p>
+      <p class="amount">RM12 <small>/ month</small></p>
+      <p class="sub">for the student with three topics on the go</p>
+      <ul>
+        <li>Unlimited roadmaps</li>
+        <li>Offline copies of all of them</li>
+        <li>Priority generation when busy</li>
+        <li>Export a roadmap as a document</li>
+      </ul>
+    </div>
+    <div class="price">
+      <p class="tiername">Cohort</p>
+      <p class="amount">RM6 <small>/ seat / month</small></p>
+      <p class="sub">10 seats minimum, for a class or study group</p>
+      <ul>
+        <li>Shared roadmaps and a join code</li>
+        <li>Per-module completion view</li>
+        <li>One invoice, one owner</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bench">
+    <span class="pill">ChatGPT+ RM90/month</span>
+    <span class="pill">Notion RM51/month</span>
+    <span>Plus sits at <b>13%</b> of the ChatGPT+ benchmark and <b>24%</b> of Notion, for one job rather than a general tool.</span>
+  </div>
+  <div class="grid-2" style="margin-top: 24px; gap: 24px;">
+    <div class="card">
+      <h3>Unit economics</h3>
+      <p style="margin-bottom: 10px;">A new roadmap costs about <b>RM0.003</b> of inference. A roadmap taken all the way through, eight guides and eight quizzes, costs about <b>RM0.03</b>.</p>
+      <p style="font-size: 19px; color: var(--ink-3);">Groq gpt-oss-20b at $0.075 / $0.30 per million tokens, converted at 4.07 MYR/USD, measured against the app's own token limits.</p>
+    </div>
+    <div class="card">
+      <h3>Why it holds</h3>
+      <p style="margin-bottom: 10px;">A heavy Plus user finishing 20 roadmaps a month costs about <b>RM0.62</b> to serve, against RM12 of revenue.</p>
+      <p style="font-size: 19px; color: var(--ink-3);">A free user on one active roadmap costs at most RM0.03 and is capped by design. Paid tiers also remove the free-tier daily token ceiling that limits the instance today.</p>
+    </div>
+  </div>
+  <div class="foot"><span>FOKUS</span><span>10</span></div>
+</div>
+
+<!-- 11 -->
+<div class="slide tint">
+  <p class="eyebrow">Where this goes</p>
+  <h2>One engine, four audiences, in order.</h2>
+  <p class="lede" style="margin-bottom: 22px;">
+    Each stage reuses the same topic-in, path-out core. We move when the stage before it works
+    for its users.
+  </p>
+  <div>
+    <div class="tier"><span class="badge now">Now</span><div><h4>Students teaching themselves</h4><p>One person, one topic, one account, offline copies.</p></div><p class="why">Shipping</p></div>
+    <div class="tier"><span class="badge next">Next</span><div><h4>Study groups and small cohorts</h4><p>Shared roadmaps, a join code, who is on which module.</p></div><p class="why">After beta feedback</p></div>
+    <div class="tier"><span class="badge later">Later</span><div><h4>Classrooms and trainers</h4><p>Instructor-authored paths, deadlines, per-module reporting.</p></div><p class="why">Needs instructor accounts</p></div>
+    <div class="tier"><span class="badge later">Later</span><div><h4>Institutions</h4><p>Faculty deployment, SSO, content review before a path reaches students.</p></div><p class="why">Needs the stage above proven</p></div>
+  </div>
+  <div class="foot"><span>FOKUS</span><span>11</span></div>
+</div>
+
+<!-- 12 -->
+<div class="slide">
+  <p class="eyebrow">What is built today</p>
+  <h2>Not a mockup. A working account-based app.</h2>
+  <div class="grid-2" style="grid-template-columns: 1.05fr 1fr; align-items: start; gap: 34px;">
+    <div>
+      <div class="grid-2" style="gap: 18px;">
+        <div class="card"><h3>Learner side</h3><ul style="margin-top: 6px;"><li>Accounts, saved roadmaps, progress</li><li>Course sidebar with the module tree</li><li>Watch, read, check per module</li><li>Offline copies</li></ul></div>
+        <div class="card"><h3>Operator side</h3><ul style="margin-top: 6px;"><li>Usage, tokens and cost</li><li>Users and their roadmaps</li><li>Content list and progress</li><li>Refusals and rate limits</li></ul></div>
+      </div>
+      <div class="card" style="margin-top: 18px;"><h3>Also shipped</h3><p>Installable as a phone app, an Android build on the repo, and a public landing page that shows a real roadmap building itself.</p></div>
+    </div>
+    <div class="shot">
+      <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">fokus / admin</span></div>
+      <img src="shots/admin-overview.png" alt="Admin dashboard with instance stats, a roadmaps per day chart and a recent roadmaps list">
+    </div>
+  </div>
+  <div class="foot"><span>FOKUS</span><span>12</span></div>
+</div>
+
+<!-- 13 -->
 <div class="slide dark">
   <p class="eyebrow">What we know is missing</p>
   <h2>The honest limit list.</h2>
-  <p class="lede" style="margin-bottom: 36px;">
-    A pitch that hides its constraints gets caught in the first question. These are known, and
-    each has a next step.
+  <p class="lede" style="margin-bottom: 30px;">
+    A pitch that hides its constraints gets caught in the first question. Each of these has a
+    next step.
   </p>
-  <div class="grid-2" style="gap: 26px;">
-    <div class="card">
-      <h3>Capacity</h3>
-      <p>On a free model tier, a new roadmap costs about 4,000 tokens and a fully opened one
-      about 34,000. That is roughly six fully explored roadmaps per day for the whole instance
-      until we move to a paid key.</p>
-    </div>
-    <div class="card">
-      <h3>Retention evidence</h3>
-      <p>We have no cohort data yet. Fifteen completions across the instance is a signal that
-      the loop works, not proof that people come back.</p>
-    </div>
-    <div class="card">
-      <h3>Surface area</h3>
-      <p>No sharing, no groups, no instructor tools. Roadmaps are personal-only today.</p>
-    </div>
-    <div class="card">
-      <h3>Distribution</h3>
-      <p>Currently hosted on a personal tunnel. A real domain and a managed host are required
-      before any public beta.</p>
-    </div>
+  <div class="grid-2" style="gap: 22px;">
+    <div class="card"><h3>Capacity</h3><p>On the free model tier the instance caps out around six fully explored roadmaps a day. A paid key removes that ceiling and is the first spend the beta needs.</p></div>
+    <div class="card"><h3>Retention evidence</h3><p>No cohort data yet. Fifteen completions is a signal that the loop works, not proof that people come back for module nine on a new topic.</p></div>
+    <div class="card"><h3>Surface area</h3><p>No sharing, no groups, no instructor tools. Every roadmap is personal-only today, which is what the Cohort tier has to change.</p></div>
+    <div class="card"><h3>Distribution</h3><p>Hosted on a personal tunnel. A real domain and a managed host are required before any public beta link goes out.</p></div>
   </div>
-  <div class="foot"><span>Next: closed beta with 10 self-study students</span><span>9</span></div>
+  <div class="foot"><span>Next: closed beta with 10 self-study students</span><span>13</span></div>
 </div>
 
-<!-- 10 · ask -->
+<!-- 14 -->
 <div class="slide tint">
-  <p class="eyebrow">What we want next</p>
+  <p class="eyebrow">The ask</p>
   <h2>Ten students, one topic each, one honest list of what broke.</h2>
-  <div class="grid-3" style="margin-top: 20px;">
-    <div class="card">
-      <div class="num">1</div>
-      <h3>Run a closed beta</h3>
-      <p>Ten self-study students make a roadmap on a topic they already know, then open module
-      one and complete its check.</p>
-    </div>
-    <div class="card">
-      <div class="num">2</div>
-      <h3>Fix the first-run flow</h3>
-      <p>Every broken step found in the beta gets fixed before we invite the next wave. No
-      recruiting everyone at once.</p>
-    </div>
-    <div class="card">
-      <div class="num">3</div>
-      <h3>Then open the next tier</h3>
-      <p>With the core loop steady, add shared roadmaps for study groups, and only then the
-      classroom features.</p>
-    </div>
+  <div class="grid-3" style="margin-top: 14px;">
+    <div class="card"><div class="num">1</div><h3>Run a closed beta</h3><p>Ten self-study students make a roadmap on a topic they already know, then open module one and take its check.</p></div>
+    <div class="card"><div class="num">2</div><h3>Fix the first run</h3><p>Everything the beta breaks gets fixed before the next wave. No recruiting everyone at once.</p></div>
+    <div class="card"><div class="num">3</div><h3>Then the next tier</h3><p>With the loop steady, add shared roadmaps for cohorts, and only then classroom features.</p></div>
   </div>
-  <div style="margin-top: 44px; display: flex; gap: 22px; align-items: center; flex-wrap: wrap;">
+  <div style="margin-top: 36px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
     <span class="pill">Live demo: gateway-hermes.tail62f36e.ts.net/fokus</span>
     <span class="pill">Android build on the repo releases</span>
   </div>
-  <p style="font-size: 24px; color: var(--ink-2); margin-top: 26px; max-width: 1200px;">
-    The ask is five minutes per tester, not a survey: one topic they already know, module one,
-    and a sentence on where it confused them.
+  <p style="font-size: 22px; color: var(--ink-2); margin-top: 22px; max-width: 1180px;">
+    The ask is five minutes per tester: one topic they already know, module one, and a sentence
+    on where it confused them.
   </p>
-  <div class="foot"><span>FOKUS · from a learner, for learners</span><span>10</span></div>
+  <div class="foot"><span>FOKUS · from a learner, for learners</span><span>14</span></div>
 </div>
 
 </body>
