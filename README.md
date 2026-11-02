@@ -4,6 +4,22 @@ FOKUS is a web app designed to help learners create and follow **personalized, A
 
 ---
 
+## 📱 Get the App
+
+<p>
+  <a href="https://github.com/ttc-099/fokus/releases/latest/download/fokus.apk">
+    <img src="https://img.shields.io/badge/Download-Android_APK-2563eb?style=for-the-badge&logo=android&logoColor=white" alt="Download the Android APK">
+  </a>
+</p>
+
+**Android APK** – built automatically by the [`android apk`](.github/workflows/android.yml) workflow on every push, attached to the rolling release above. Sideload it (allow installs from your browser when prompted) and it opens FOKUS fullscreen, loading the live app.
+
+**Install as an app (no file needed)** – open the web app in Chrome (Android) and choose *Install app* from the menu, or in Safari (iOS) use *Share → Add to Home Screen*. FOKUS then launches fullscreen with its own icon.
+
+**Offline** – everything needs a connection by default. On any roadmap, tap **Save offline** to keep that roadmap (with the guides, videos and quiz generated so far) readable without internet; saved roadmaps open from the home screen or the browser cache and show an offline notice.
+
+---
+
 ## 🚀 Project Goals
 
 * **Personalized Learning** → Use AI to recommend learning pathways based on user goals.

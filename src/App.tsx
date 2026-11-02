@@ -9,7 +9,10 @@ import Dashboard from "./pages/Dashboard";
 import RoadmapView from "./pages/RoadmapView";
 import ModuleView from "./pages/ModuleView";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
+import Landing from "./pages/Landing";
 import { api, AuthContext, type User } from "./services/api";
+import { cachedUser } from "./services/offline";
 import "./index.css";
 
 function App() {
@@ -17,22 +20,33 @@ function App() {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
-    api.me().then(setUser).catch(() => setUser(null));
+    api.me()
+      .then((u) => {
+        setUser(u);
+        if (u) cachedUser.save(u);
+      })
+      .catch(() => {
+        // offline: keep the last signed-in identity rather than bouncing to the landing page
+        setUser(cachedUser.read());
+      });
   }, []);
 
   if (user === undefined) {
     // avoid flashing the login page to someone with a live session
-    return <div className="boot-splash"><p className="loading">loading...</p></div>;
+    return <div className="boot-splash"><p className="loading">Loading...</p></div>;
   }
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-        <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
-          <Route index element={<Dashboard />} />
-          <Route path="roadmap/:id" element={<RoadmapView />} />
-          <Route path="roadmap/:id/m/:index" element={<ModuleView />} />
+        {/* signed out, the front door is the publicity landing page */}
+        <Route path="/" element={user ? <Layout /> : <Landing />}>
+          {/* admins are strictly admins: their home is the admin dashboard */}
+          <Route index element={user?.isAdmin ? <Admin /> : <Dashboard />} />
+          <Route path="roadmap/:id" element={user?.isAdmin ? <Navigate to="/admin" replace /> : <RoadmapView />} />
+          <Route path="admin/:tab?" element={<Admin />} />
+          <Route path="roadmap/:id/m/:index" element={user?.isAdmin ? <Navigate to="/admin" replace /> : <ModuleView />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

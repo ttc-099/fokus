@@ -1,0 +1,12 @@
+{
+  "appId": "app.fokus.learn",
+  "appName": "FOKUS",
+  "webDir": "dist",
+  "server": {
+    "url": "https://gateway-hermes.tail62f36e.ts.net/fokus/",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

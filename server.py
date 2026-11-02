@@ -23,16 +23,22 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 DIST = os.path.join(BASE, "dist")
 DB = os.path.join(BASE, "fokus.db")
 PORT = 8774
+SERVER_STARTED = None  # set at serve time
 ENV_FILE = "/opt/data/.env"
 
 GROQ_KEY = ""
+ADMIN_USERS = set()
 try:
     with open(ENV_FILE) as f:
         for line in f:
             m = re.match(r"^GROQ_API_KEY=(.+)$", line.strip())
             if m:
                 GROQ_KEY = m.group(1).strip()
-                break
+                continue
+            m = re.match(r"^FOKUS_ADMIN=(.+)$", line.strip())
+            if m:
+                # comma separated usernames that can see engine internals
+                ADMIN_USERS = {u.strip().lower() for u in m.group(1).split(",") if u.strip()}
 except FileNotFoundError:
     pass
 
@@ -54,7 +60,18 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            created_at REAL NOT NULL)""")
+            created_at REAL NOT NULL,
+            is_admin INTEGER NOT NULL DEFAULT 0)""")
+        # migration: older users tables get the admin flag column
+        ucols = {r[1] for r in c.execute("PRAGMA table_info(users)")}
+        if "is_admin" not in ucols:
+            c.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
+        # admin accounts come from the FOKUS_ADMIN env var (comma separated)
+        for name in ADMIN_USERS:
+            c.execute("UPDATE users SET is_admin = 1 WHERE username = ?", (name,))
+        c.execute("""CREATE TABLE IF NOT EXISTS counters (
+            name TEXT PRIMARY KEY,
+            value INTEGER NOT NULL)""")
         c.execute("""CREATE TABLE IF NOT EXISTS sessions (
             token TEXT PRIMARY KEY,
             user_id INTEGER NOT NULL,
@@ -65,6 +82,10 @@ def init_db():
             topic TEXT NOT NULL,
             modules TEXT NOT NULL,
             created_at REAL NOT NULL)""")
+        # migration: older rows get a null trace column
+        cols = {r[1] for r in c.execute("PRAGMA table_info(roadmaps)")}
+        if "trace" not in cols:
+            c.execute("ALTER TABLE roadmaps ADD COLUMN trace TEXT")
 
 
 # ---- passwords: scrypt with a random salt, constant-time compare
@@ -105,7 +126,7 @@ def session_user(request):
         return None
     with db() as c:
         row = c.execute(
-            "SELECT u.id, u.username, u.created_at FROM sessions s "
+            "SELECT u.id, u.username, u.created_at, u.is_admin FROM sessions s "
             "JOIN users u ON u.id = s.user_id "
             "WHERE s.token = ? AND s.expires_at > ?", (token, time.time())).fetchone()
     return dict(row) if row else None
@@ -196,9 +217,19 @@ def wiki_research(query, n=3):
         return []
 
 
+# ---- llm telemetry: every groq call logs tokens, latency, tok/s
+# (filled during a generation, drained by the agent pipeline below)
+LLM_CALLS = []
+
+# indicative groq pricing per million tokens (we ride the free tier,
+# but cost-per-request is a first-class metric in the ui)
+COST_IN, COST_OUT = 0.05, 0.10
+
+
 def groq_chat(messages, max_tokens=1400):
     # no response_format: groq's json_object validation chokes on gpt-oss
     # reasoning output intermittently, so we parse the text defensively
+    t0 = time.time()
     r = http_json(GROQ_URL,
                   payload={"model": MODEL,
                            "messages": messages,
@@ -206,6 +237,13 @@ def groq_chat(messages, max_tokens=1400):
                            "max_tokens": max_tokens},
                   headers={"Authorization": "Bearer " + GROQ_KEY},
                   timeout=45)
+    dt = max(time.time() - t0, 0.001)
+    u = r.get("usage") or {}
+    LLM_CALLS.append({"model": MODEL,
+                      "ms": int(dt * 1000),
+                      "prompt_tokens": u.get("prompt_tokens", 0),
+                      "completion_tokens": u.get("completion_tokens", 0),
+                      "tps": round(u.get("completion_tokens", 0) / dt, 1)})
     text = r["choices"][0]["message"]["content"].strip()
     # strip markdown fences, take the outermost {...} block
     text = re.sub(r"^```(json)?|```$", "", text, flags=re.MULTILINE).strip()
@@ -221,32 +259,76 @@ def research_block(sources):
     return " ".join(f'[Wikipedia: {s["title"]}] {s["text"]}' for s in sources)
 
 
-# ---- ai generation (same prompts as the demo phase)
+# ---- ai generation: an explicit agent pipeline
+# researcher (wikipedia) -> builder (llm writes 8 modules) -> validator
+# (checks the contract, triggers one rebuild if the model stopped short).
+# each stage is timed and its llm calls recorded, so every roadmap row
+# carries a granular trace: per-call tokens, tok/s and wall time.
 def generate_modules(topic):
-    sources = wiki_research(topic)
-    base_prompt = (
-        'Create a JSON object {"modules": array of exactly 8 items}. '
-        'Each item: {"title": a stage name of max 6 words, '
-        '"content": 2 sentences, what to learn at this stage and why it matters}. '
-        f'Topic: "{topic}". '
-        'Sequence from complete beginner to advanced, titles specific to this topic. '
-        f'Wikipedia research to ground it: {research_block(sources)}')
-    msgs = [{"role": "system",
+    trace = {"model": MODEL, "agents": []}
+    state = {}
+
+    def stage(name, fn):
+        # run one agent, drain the llm calls it made into its trace entry
+        del LLM_CALLS[:]
+        t0 = time.time()
+        out = fn()
+        trace["agents"].append({"agent": name,
+                                "ms": int((time.time() - t0) * 1000),
+                                "calls": list(LLM_CALLS)})
+        return out
+
+    def research():
+        state["sources"] = wiki_research(topic)
+        return state["sources"]
+
+    def build():
+        base_prompt = (
+            'Create a JSON object {"modules": array of exactly 8 items}. '
+            'Each item: {"title": a stage name of max 6 words, '
+            '"content": 2 sentences, what to learn at this stage and why it matters}. '
+            f'Topic: "{topic}". '
+            'Sequence from complete beginner to advanced, titles specific to this topic. '
+            f'Wikipedia research to ground it: {research_block(state["sources"])}')
+        state["msgs"] = [
+            {"role": "system",
              "content": "You design beginner-to-advanced learning roadmaps. Output strict JSON only, no prose."},
             {"role": "user", "content": base_prompt}]
-    data = groq_chat(msgs, max_tokens=4000)
-    mods = data.get("modules", [])
-    # retry once if the model stopped short (reasoning models sometimes truncate)
-    if not isinstance(mods, list) or len(mods) < 8:
-        msgs.append({"role": "user",
-                     "content": f"Return the full roadmap: exactly 8 modules. Your previous answer had {len(mods) if isinstance(mods, list) else 0}."})
-        data = groq_chat(msgs, max_tokens=4000)
-        mods = data.get("modules", [])
+        return groq_chat(state["msgs"], max_tokens=4000).get("modules", [])
+
+    def validate(mods):
+        # validator: enforce the 8-module contract, rebuild once if short
+        if isinstance(mods, list) and len(mods) >= 8:
+            return mods
+        state["msgs"].append(
+            {"role": "user",
+             "content": f"Return the full roadmap: exactly 8 modules. Your previous answer had {len(mods) if isinstance(mods, list) else 0}."})
+        return groq_chat(state["msgs"], max_tokens=4000).get("modules", [])
+
+    sources = stage("Researcher", research)
+    mods = stage("Builder", build)
+    mods = stage("Validator", lambda: validate(mods))
     modules = [{"title": str(m.get("title", ""))[:60],
                 "content": str(m.get("content", ""))[:400],
                 "fullContent": None, "done": False}
                for m in mods if isinstance(m, dict)]
-    return modules, [{"title": s["title"], "url": s["url"]} for s in sources]
+    return modules, [{"title": s["title"], "url": s["url"]} for s in sources], trace
+
+
+def trace_totals(trace):
+    # roll a trace up into llm-native totals: calls, tokens, tok/s, cost
+    if not trace:
+        return {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0,
+                "tokens": 0, "ms": 0, "tps": 0, "cost_usd": 0}
+    calls = [c for a in trace["agents"] for c in a["calls"]]
+    pin = sum(c["prompt_tokens"] for c in calls)
+    pout = sum(c["completion_tokens"] for c in calls)
+    ms = sum(c["ms"] for c in calls)
+    return {"calls": len(calls),
+            "prompt_tokens": pin, "completion_tokens": pout, "tokens": pin + pout,
+            "ms": ms,
+            "tps": round(pout / max(ms / 1000, 0.001), 1),
+            "cost_usd": round((pin * COST_IN + pout * COST_OUT) / 1e6, 6)}
 
 
 def generate_detail(topic, title, index):
@@ -268,6 +350,38 @@ def generate_detail(topic, title, index):
         "content": str(data.get("content", "")).strip(),
         "sources": [{"title": s["title"], "url": s["url"]} for s in sources],
     }
+
+
+def generate_quiz(topic, title, index):
+    # three quick comprehension questions, generated once and stored per module
+    data = groq_chat([
+        {"role": "system",
+         "content": "You write short comprehension quizzes. Output strict JSON only, no prose."},
+        {"role": "user",
+         "content":
+             'Create a JSON object {"questions": [...]} with exactly 3 multiple-choice questions '
+             f'testing whether someone understood module {index} ("{title}") of a learning path on "{topic}". '
+             'Each item: {"q": the question, "options": [4 short answers], "answer": index of the '
+             'correct option (0-3), "why": one short sentence explaining it}. '
+             'Exactly one option is correct, the others plausible but wrong. '
+             'Keep every option under 90 characters, plain text, no markdown.'},
+    ], max_tokens=1200)
+    out = []
+    for q in (data.get("questions") or [])[:6]:
+        if not isinstance(q, dict):
+            continue
+        opts = [str(o).strip() for o in (q.get("options") or [])][:4]
+        try:
+            ans = int(q.get("answer", -1))
+        except Exception:
+            ans = -1
+        text = str(q.get("q", "")).strip()
+        if len(opts) == 4 and 0 <= ans < 4 and text:
+            out.append({"q": text, "options": opts, "answer": ans,
+                        "why": str(q.get("why", "")).strip()})
+    if len(out) < 3:
+        raise ValueError("quiz came back incomplete")
+    return {"v": 1, "questions": out[:3]}
 
 
 # ---- youtube: scrape the results page (no key needed), verify via oembed
@@ -470,18 +584,44 @@ def llm_topic_check(topic):
     return bool(data.get("ok")), [str(s)[:60] for s in data.get("suggestions", [])][:3]
 
 
-def roadmap_json(row):
+def bump_counter(name, by=1):
+    with db() as c:
+        c.execute("INSERT INTO counters (name, value) VALUES (?,?) "
+                  "ON CONFLICT(name) DO UPDATE SET value = value + excluded.value",
+                  (name, by))
+
+
+def _agent_averages(rows):
+    # mean wall time per pipeline agent across all traced roadmaps
+    agg = {}
+    for r in rows:
+        if not r["trace"]:
+            continue
+        for a in json.loads(r["trace"]).get("agents", []):
+            name = a["agent"].capitalize()
+            e = agg.setdefault(name, [0, 0])
+            e[0] += a["ms"]; e[1] += 1
+    return agg
+
+
+def roadmap_json(row, admin=False):
+    # engine internals (trace + totals) only ship to admin accounts
+    trace = json.loads(row["trace"]) if row["trace"] else None
     return {"id": row["id"], "topic": row["topic"],
             "createdAt": row["created_at"],
-            "modules": json.loads(row["modules"])}
+            "modules": json.loads(row["modules"]),
+            "trace": trace if admin else None,
+            "traceTotals": trace_totals(trace) if admin else None}
 
 
 def roadmap_summary(row):
     modules = json.loads(row["modules"])
+    next_mod = next((m["title"] for m in modules if not m.get("done")), None)
     return {"id": row["id"], "topic": row["topic"],
             "createdAt": row["created_at"],
             "total": len(modules),
-            "done": sum(1 for m in modules if m.get("done"))}
+            "done": sum(1 for m in modules if m.get("done")),
+            "next": next_mod}
 
 
 def load_owned(c, user_id, roadmap_id):
@@ -587,8 +727,11 @@ class Handler(SimpleHTTPRequestHandler):
             ok, suggestions = topic_check(str(body.get("topic", "")))
             return self._json(200, {"ok": ok, "suggestions": suggestions})
         if path == "/api/roadmaps" and isinstance(body.get("topic"), str):
+            # strictly-admin: admins manage the instance, they don't learn
+            if user["is_admin"]:
+                return self._json(403, {"error": "Admin accounts manage the instance, not learn in it"})
             return self.handle_create(user, body)
-        m = re.fullmatch(r"/api/roadmaps/(\d+)/(toggle|detail|resources)", path)
+        m = re.fullmatch(r"/api/roadmaps/(\d+)/(toggle|detail|resources|quiz)", path)
         if m:
             return self.handle_module(user, int(m.group(1)), m.group(2), body)
         m = re.fullmatch(r"/api/roadmaps/(\d+)", path)
@@ -603,7 +746,8 @@ class Handler(SimpleHTTPRequestHandler):
             if not user:
                 return self._json(401, {"error": "not signed in"})
             return self._json(200, {"username": user["username"],
-                                    "createdAt": user["created_at"]})
+                                    "createdAt": user["created_at"],
+                                    "isAdmin": bool(user["is_admin"])})
         if path == "/api/roadmaps":
             user = session_user(self)
             if not user:
@@ -623,7 +767,219 @@ class Handler(SimpleHTTPRequestHandler):
                 row = load_owned(c, user["id"], int(m.group(1)))
             if not row:
                 return self._json(404, {"error": "roadmap not found"})
-            return self._json(200, roadmap_json(row))
+            return self._json(200, roadmap_json(row, admin=bool(user["is_admin"])))
+        if path == "/api/activity":
+            # completion dates for the sidebar calendar: last 35 days per day count
+            user = session_user(self)
+            if not user:
+                return self._json(401, {"error": "not signed in"})
+            days, week, total = {}, 0, None
+            now = time.time()
+            week_ago = now - 7 * 86400
+            with db() as c:
+                rows = c.execute("SELECT modules FROM roadmaps WHERE user_id = ?",
+                                 (user["id"],)).fetchall()
+            for row in rows:
+                for mod in json.loads(row["modules"]):
+                    ts = mod.get("doneAt")
+                    if not ts:
+                        continue
+                    day = time.strftime("%Y-%m-%d", time.gmtime(ts))
+                    days[day] = days.get(day, 0) + 1
+                    total = (total or 0) + 1
+                    if ts >= week_ago:
+                        week += 1
+            return self._json(200, {"days": days, "week": week, "total": total or 0})
+        if path == "/api/metrics":
+            # llm-native engine metrics rolled up across all roadmaps (admin only)
+            user = session_user(self)
+            if not user:
+                return self._json(401, {"error": "not signed in"})
+            if not user["is_admin"]:
+                return self._json(403, {"error": "admin only"})
+            with db() as c:
+                rows = c.execute("SELECT trace FROM roadmaps WHERE user_id = ?",
+                                 (user["id"],)).fetchall()
+            agg = {"roadmaps": len(rows), "calls": 0, "tokens": 0, "ms": 0, "cost_usd": 0}
+            out_toks = 0
+            for row in rows:
+                if not row["trace"]:
+                    continue
+                t = trace_totals(json.loads(row["trace"]))
+                agg["calls"] += t["calls"]
+                agg["tokens"] += t["tokens"]
+                agg["ms"] += t["ms"]
+                agg["cost_usd"] = round(agg["cost_usd"] + t["cost_usd"], 6)
+                out_toks += t["completion_tokens"]
+            agg["tps"] = round(out_toks / max(agg["ms"] / 1000, 0.001), 1)
+            agg["cost_usd"] = round(agg["cost_usd"], 4)
+            return self._json(200, agg)
+        if path == "/api/admin/stats":
+            # whole-instance stats for the admin dashboard (admin only)
+            user = session_user(self)
+            if not user:
+                return self._json(401, {"error": "not signed in"})
+            if not user["is_admin"]:
+                return self._json(403, {"error": "admin only"})
+            now = time.time()
+            week_ago = now - 7 * 86400
+            with db() as c:
+                users = c.execute("SELECT username, created_at FROM users").fetchall()
+                rows = c.execute(
+                    "SELECT r.topic, r.created_at, r.modules, r.trace, u.username "
+                    "FROM roadmaps r JOIN users u ON u.id = r.user_id "
+                    "ORDER BY r.created_at DESC").fetchall()
+                c2 = c
+            modules_total = modules_done = 0
+            per_user, per_day = {}, {}
+            day0 = time.strftime("%Y-%m-%d", time.gmtime(now - 13 * 86400))
+            llm = {"calls": 0, "tokens": 0, "ms": 0, "cost_usd": 0.0, "out_tokens": 0}
+            for row in rows:
+                mods = json.loads(row["modules"])
+                done = sum(1 for m in mods if m.get("done"))
+                modules_total += len(mods)
+                modules_done += done
+                u = per_user.setdefault(row["username"], {"roadmaps": 0, "done": 0, "last": 0.0})
+                u["roadmaps"] += 1
+                u["done"] += done
+                # last activity: newest roadmap or newest module completion
+                u["last"] = max(u["last"], row["created_at"])
+                for m in mods:
+                    if m.get("doneAt"):
+                        u["last"] = max(u["last"], m["doneAt"])
+                day = time.strftime("%Y-%m-%d", time.gmtime(row["created_at"]))
+                if day >= day0:
+                    per_day[day] = per_day.get(day, 0) + 1
+                if row["trace"]:
+                    t = trace_totals(json.loads(row["trace"]))
+                    llm["calls"] += t["calls"]
+                    llm["tokens"] += t["tokens"]
+                    llm["ms"] += t["ms"]
+                    llm["cost_usd"] += t["cost_usd"]
+                    llm["out_tokens"] += t["completion_tokens"]
+            # full 14-day series including zero days
+            series = []
+            for i in range(13, -1, -1):
+                d = time.strftime("%Y-%m-%d", time.gmtime(now - i * 86400))
+                series.append({"day": d, "roadmaps": per_day.get(d, 0)})
+            top = sorted(per_user.items(), key=lambda kv: -kv[1]["roadmaps"])[:8]
+            # tokens per day + avg generation time from traces
+            tok_day, gen_ms = {}, []
+            for row in rows:
+                if row["trace"]:
+                    t = trace_totals(json.loads(row["trace"]))
+                    gen_ms.append(t["ms"])
+                    day = time.strftime("%Y-%m-%d", time.gmtime(row["created_at"]))
+                    if day >= day0:
+                        tok_day[day] = tok_day.get(day, 0) + t["tokens"]
+            token_series = [{"day": d["day"], "tokens": tok_day.get(d["day"], 0)} for d in series]
+            first = min((r["created_at"] for r in rows), default=None)
+            span_days = max(1, (now - first) / 86400) if first else 14
+            month_proj = round(sum(tok_day.values()) / max(span_days, 1) * 0, 4)  # tokens/day avg below
+            tok_total = sum(t["tokens"] for t in [trace_totals(json.loads(r["trace"])) for r in rows if r["trace"]])
+            cost_total = sum(t["cost_usd"] for t in [trace_totals(json.loads(r["trace"])) for r in rows if r["trace"]])
+            month_cost = round(cost_total / min(span_days, 14 if not tok_day else 14) * 30, 4) if cost_total else 0.0
+            try:
+                db_size = os.path.getsize(DB)
+            except Exception:
+                db_size = 0
+            return self._json(200, {
+                "users": len(users),
+                "newUsersWeek": sum(1 for u in users if u["created_at"] >= week_ago),
+                "activeWeek": sum(1 for v in per_user.values() if v["last"] >= week_ago),
+                "roadmaps": len(rows),
+                "modules": modules_total,
+                "modulesDone": modules_done,
+                "llm": {"calls": llm["calls"], "tokens": llm["tokens"],
+                        "tps": round(llm["out_tokens"] / max(llm["ms"] / 1000, 0.001), 1),
+                        "costUsd": round(llm["cost_usd"], 4)},
+                "gateRejections": (c2.execute("SELECT value FROM counters WHERE name = 'gate_rejections'")
+                                   .fetchone() or {"value": 0})["value"],
+                "avgGenMs": round(sum(gen_ms) / len(gen_ms)) if gen_ms else 0,
+                "lastCreated": max((r["created_at"] for r in rows), default=None),
+                "tokenSeries": token_series,
+                "models": [{"model": MODEL, "calls": llm["calls"], "tokens": llm["tokens"],
+                            "tps": round(llm["out_tokens"] / max(llm["ms"] / 1000, 0.001), 1),
+                            "costUsd": round(llm["cost_usd"], 4)}],
+                "monthCost": month_cost,
+                "dbInfo": {"path": DB, "sizeKb": round(db_size / 1024), "roadmaps": len(rows)},
+                "serverStarted": SERVER_STARTED or now,
+                "funnel": {"started": len(rows),
+                           "touched": sum(1 for r in rows if any(m.get("done") for m in json.loads(r["modules"]))),
+                           "finished": sum(1 for r in rows if all(m.get("done") for m in json.loads(r["modules"])) and json.loads(r["modules"]))},
+                "completionRate": round(100 * modules_done / modules_total, 1) if modules_total else 0,
+                "attention": [{"topic": r["topic"], "owner": r["username"], "ageDays": int((now - r["created_at"]) / 86400)}
+                              for r in rows
+                              if not any(m.get("done") for m in json.loads(r["modules"])) and now - r["created_at"] > 3 * 86400][:5],
+                "slowest": sorted([{"topic": r["topic"],
+                                    "ms": trace_totals(json.loads(r["trace"]))["ms"],
+                                    "tokens": trace_totals(json.loads(r["trace"]))["tokens"]}
+                                   for r in rows if r["trace"]],
+                                  key=lambda x: -x["ms"])[:5],
+                "agentAverages": (lambda ag: {k: round(v[0] / v[1]) for k, v in ag.items()})((
+                    lambda: ({}))() if not rows else _agent_averages(rows)),
+                "config": {"admins": sorted(ADMIN_USERS), "sessionDays": SESSION_DAYS,
+                           "authRateLimit": AUTH_MAX, "aiPerWindow": AI_MAX},
+                "series": series,
+                "topUsers": [{"username": k, "roadmaps": v["roadmaps"], "done": v["done"]} for k, v in top],
+                "recent": [{"topic": r["topic"], "owner": r["username"],
+                            "created": r["created_at"],
+                            "done": sum(1 for m in json.loads(r["modules"]) if m.get("done")),
+                            "total": len(json.loads(r["modules"]))}
+                           for r in rows[:8]]})
+        m = re.fullmatch(r"/api/admin/(users|roadmaps)", path)
+        if m:
+            # admin sub-pages: per-user activity and the instance content list
+            user = session_user(self)
+            if not user:
+                return self._json(401, {"error": "not signed in"})
+            if not user["is_admin"]:
+                return self._json(403, {"error": "admin only"})
+            with db() as c:
+                users = c.execute("SELECT username, created_at FROM users").fetchall()
+                rows = c.execute(
+                    "SELECT r.id, r.topic, r.created_at, r.modules, r.trace, u.username "
+                    "FROM roadmaps r JOIN users u ON u.id = r.user_id "
+                    "ORDER BY r.created_at DESC").fetchall()
+            if m.group(1) == "users":
+                per = {}
+                seen = set()
+                for r in rows:
+                    mods = json.loads(r["modules"])
+                    p = per.setdefault(r["username"],
+                                       {"roadmaps": 0, "done": 0, "lastActive": r["created_at"]})
+                    p["roadmaps"] += 1
+                    p["done"] += sum(1 for x in mods if x.get("done"))
+                    if r["username"] not in seen:
+                        seen.add(r["username"])
+                        p["lastTopic"] = r["topic"]
+                    for x in mods:
+                        if x.get("doneAt"):
+                            p["lastActive"] = max(p["lastActive"], x["doneAt"])
+                # per-user completion calendar (last 35 days) for the admin expansion
+                for r in rows:
+                    p = per.setdefault(r["username"], {"roadmaps": 0, "done": 0, "lastActive": r["created_at"], "days": {}})
+                    p.setdefault("days", {})
+                    for x in json.loads(r["modules"]):
+                        if x.get("doneAt"):
+                            day = time.strftime("%Y-%m-%d", time.gmtime(x["doneAt"]))
+                            p["days"][day] = p["days"].get(day, 0) + 1
+                return self._json(200, [
+                    {"username": u["username"], "joined": u["created_at"],
+                     **per.get(u["username"], {"roadmaps": 0, "done": 0, "lastActive": None, "days": {}})}
+                    for u in users])
+            out = []
+            for r in rows:
+                mods = json.loads(r["modules"])
+                t = trace_totals(json.loads(r["trace"])) if r["trace"] else None
+                out.append({"id": r["id"], "topic": r["topic"], "owner": r["username"],
+                            "created": r["created_at"],
+                            "done": sum(1 for x in mods if x.get("done")),
+                            "total": len(mods),
+                            "genMs": t["ms"] if t else None,
+                            "tokens": t["tokens"] if t else None,
+                            "hasResources": any(x.get("resources") for x in mods)})
+            return self._json(200, out)
         if path.startswith("/api/"):
             return self._json(404, {"error": "not found"})
         return super().do_GET()
@@ -642,8 +998,10 @@ class Handler(SimpleHTTPRequestHandler):
                                      (username,)).fetchone()
                 if existing:
                     return self._json(409, {"error": "that username is taken"})
-                cur = c.execute("INSERT INTO users VALUES (NULL,?,?,?)",
-                                (username, hash_password(password), time.time()))
+                cur = c.execute("INSERT INTO users (username, password_hash, created_at, is_admin) "
+                                "VALUES (?,?,?,?)",
+                                (username, hash_password(password), time.time(),
+                                 1 if username.lower() in ADMIN_USERS else 0))
                 user_id = cur.lastrowid
             else:
                 row = c.execute("SELECT id, password_hash FROM users WHERE username = ?",
@@ -663,7 +1021,8 @@ class Handler(SimpleHTTPRequestHandler):
         # nonsense gate: refuse key spam before it reaches the ai
         ok, suggestions = topic_check(topic)
         if not ok:
-            return self._json(422, {"error": "that doesn't look like a real topic",
+            bump_counter("gate_rejections")
+            return self._json(422, {"error": "That doesn't look like a real topic",
                                     "suggestions": suggestions})
         if not ai_allowed(self.client_ip()):
             return self._json(429, {"error": "rate limited, try again later"})
@@ -676,19 +1035,23 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception:
             learnable, judge_sugg = True, []  # judge down: don't block real users
         if not learnable:
-            return self._json(422, {"error": "that's a real word, but not much to learn there",
+            bump_counter("gate_rejections")
+            return self._json(422, {"error": "That's a real word, but not much to learn there",
                                     "suggestions": judge_sugg})
         try:
-            modules, _sources = generate_modules(topic)
+            modules, _sources, trace = generate_modules(topic)
         except Exception:
             return self._json(502, {"error": "ai generation failed, try again"})
         if len(modules) < 4:
             return self._json(502, {"error": "ai returned too few modules, try again"})
         with db() as c:
-            cur = c.execute("INSERT INTO roadmaps VALUES (NULL,?,?,?,?)",
-                            (user["id"], topic, json.dumps(modules), time.time()))
+            cur = c.execute(
+                "INSERT INTO roadmaps (user_id, topic, modules, created_at, trace) "
+                "VALUES (?,?,?,?,?)",
+                (user["id"], topic, json.dumps(modules), time.time(),
+                 json.dumps(trace)))
             row = load_owned(c, user["id"], cur.lastrowid)
-        return self._json(200, roadmap_json(row))
+        return self._json(200, roadmap_json(row, admin=bool(user["is_admin"])))
 
     def handle_module(self, user, roadmap_id, action, body):
         try:
@@ -703,8 +1066,13 @@ class Handler(SimpleHTTPRequestHandler):
             if index < 0 or index >= len(modules):
                 return self._json(400, {"error": "invalid module index"})
             if action == "toggle":
-                # flip the done flag, save, return the whole roadmap
-                modules[index]["done"] = not modules[index].get("done")
+                # flip the done flag (and remember when) then save
+                if modules[index].get("done"):
+                    modules[index]["done"] = False
+                    modules[index].pop("doneAt", None)
+                else:
+                    modules[index]["done"] = True
+                    modules[index]["doneAt"] = time.time()
                 c.execute("UPDATE roadmaps SET modules = ? WHERE id = ?",
                           (json.dumps(modules), roadmap_id))
             elif action == "resources":
@@ -718,6 +1086,20 @@ class Handler(SimpleHTTPRequestHandler):
                 modules[index]["resources"] = {
                     "videos": vids,
                     "links": course_links(row["topic"], modules[index]["title"])}
+                c.execute("UPDATE roadmaps SET modules = ? WHERE id = ?",
+                          (json.dumps(modules), roadmap_id))
+            elif action == "quiz":
+                # three quick questions per module, generated once and stored
+                if modules[index].get("quiz"):
+                    row = load_owned(c, user["id"], roadmap_id)
+                    return self._json(200, roadmap_json(row))
+                if not ai_allowed(self.client_ip()):
+                    return self._json(429, {"error": "rate limited, try again later"})
+                try:
+                    modules[index]["quiz"] = generate_quiz(
+                        row["topic"], modules[index]["title"], index + 1)
+                except Exception:
+                    return self._json(502, {"error": "quiz generation failed, try again"})
                 c.execute("UPDATE roadmaps SET modules = ? WHERE id = ?",
                           (json.dumps(modules), roadmap_id))
             else:  # detail
@@ -773,6 +1155,8 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
+
+SERVER_STARTED = time.time()
 
 if __name__ == "__main__":
     init_db()

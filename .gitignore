@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 
+
+# local design scratch (mockups, screenshot previews)
+landing/

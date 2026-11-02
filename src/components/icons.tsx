@@ -61,3 +61,25 @@ export const IconDumbbell = ({ size = 18 }: IconProps) =>
 
 export const IconExternal = ({ size = 16 }: IconProps) =>
   svg(<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></>, size);
+
+// each nav item gets its own shape: map for roadmaps, bars for usage,
+// people for users, layers for content
+export const IconMap = ({ size = 20, className }: IconProps) =>
+  svg(<><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></>, size, className);
+
+export const IconChart = ({ size = 20, className }: IconProps) =>
+  svg(<><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></>, size, className);
+
+export const IconUsers = ({ size = 20, className }: IconProps) =>
+  svg(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>, size, className);
+
+export const IconLayers = ({ size = 20, className }: IconProps) =>
+  svg(<><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>, size, className);
+
+// a question mark in a circle, for quiz items
+export const IconQuiz = ({ size = 16, className }: IconProps) =>
+  svg(<><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></>, size, className);
+
+// a bookmark, for keeping a roadmap on the device
+export const IconBookmark = ({ size = 16, className }: IconProps) =>
+  svg(<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />, size, className);
