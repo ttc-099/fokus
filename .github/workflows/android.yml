@@ -38,8 +38,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android licenses
+        # the ubuntu runner ships an android sdk; only the licenses need nudging
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          echo "sdk at $SDK"
+          printf 'y\n%.0s' $(seq 1 40) | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          ls "$SDK/platforms" 2>/dev/null | tail -3 || true
 
       - name: Install dependencies
         run: npm install
@@ -55,6 +60,8 @@ jobs:
 
       - name: Assemble debug APK
         run: |
+          SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          echo "sdk.dir=$SDK" > android/local.properties
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
