@@ -148,7 +148,7 @@ const Dashboard = () => {
             ))}
           </div>
         )}
-        {creating && <p className="hint" role="status" aria-live="polite">The AI researches your topic and builds 8 modules, this takes a few seconds</p>}
+        {creating && <p className="hint" role="status" aria-live="polite">The AI researches your topic and builds the modules it needs, this takes a few seconds</p>}
         {error && <p className="error-text">{error}</p>}
 
         {gate && (

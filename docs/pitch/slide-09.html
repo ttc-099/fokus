@@ -125,15 +125,15 @@
   <div class="flow">
     <div class="step"><div class="bar"></div><p class="who">Learner</p><h4>Types a topic</h4><p>A gate blocks key-spam and non-learnable input before any model call.</p></div>
     <div class="step"><div class="bar"></div><p class="who">System</p><h4>Researches</h4><p>Pulls live Wikipedia sources for the topic, and per module when it opens.</p></div>
-    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Writes 8 modules</h4><p>Ordered beginner to advanced, each with a scope line and a full guide.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Writes the stages</h4><p>Between 5 and 12, chosen from the topic's real scope. Ordered beginner to advanced.</p></div>
     <div class="step"><div class="bar"></div><p class="who">System</p><h4>Finds resources</h4><p>Real YouTube results, verified; course search links per platform.</p></div>
-    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Builds the check</h4><p>Three questions per module, generated once and stored.</p></div>
+    <div class="step"><div class="bar"></div><p class="who">Model</p><h4>Builds the check</h4><p>3 to 5 targeted questions per stage, from that stage's guide. Stored once.</p></div>
   </div>
   <div class="grid-4" style="margin-top: 32px;">
-    <div class="kpi plain"><div class="n">~2.4s</div><div class="l">average roadmap generation</div></div>
-    <div class="kpi plain"><div class="n">1</div><div class="l">model call per artefact, cached after</div></div>
-    <div class="kpi plain"><div class="n">React + Python</div><div class="l">SQLite, one process, installable as an app</div></div>
-    <div class="kpi plain"><div class="n">Swap</div><div class="l">the model provider, the JSON contract stays</div></div>
+    <div class="kpi plain"><div class="n">~2.4s</div><div class="l">to generate a whole path</div></div>
+    <div class="kpi plain"><div class="n">2.5s</div><div class="l">to write one stage guide, then cached</div></div>
+    <div class="kpi plain"><div class="n">1</div><div class="l">model call per artefact, never repeated</div></div>
+    <div class="kpi plain"><div class="n">0</div><div class="l">fabricated videos or links, verified at source</div></div>
   </div>
   <div class="foot"><span>FOKUS</span><span>9</span></div>
 </div>

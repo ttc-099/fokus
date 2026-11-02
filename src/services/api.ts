@@ -29,6 +29,8 @@ export interface SourceLink {
 
 export interface QuizQuestion {
   q: string;
+  kind?: "recall" | "apply" | "trap";
+  concept?: string;
   options: string[];
   answer: number;
   why: string;
@@ -37,6 +39,8 @@ export interface QuizQuestion {
 export interface ModuleQuiz {
   v?: number;
   questions: QuizQuestion[];
+  // pass mark for this set; older quizzes fall back to a two thirds rule
+  pass?: number;
 }
 
 export interface ModuleDetail {

@@ -156,7 +156,9 @@ const ModuleView = () => {
 
   const quiz = m.quiz;
   const score = quiz ? quiz.questions.reduce((s, q, i) => s + (answers[i] === q.answer ? 1 : 0), 0) : 0;
-  const quizPassed = !!quiz && submitted && score >= 2;
+  // the number of questions is set per module, so the pass mark travels with the quiz
+  const passMark = quiz ? (quiz.pass ?? Math.max(2, Math.ceil(quiz.questions.length * 2 / 3))) : 0;
+  const quizPassed = !!quiz && submitted && score >= passMark;
   const allAnswered = quiz ? quiz.questions.every((_, i) => answers[i] !== undefined) : false;
   // the check gates continuing, unless it could not be generated
   const canContinue = !quiz || quizPassed || !!quizError;
@@ -185,9 +187,9 @@ const ModuleView = () => {
       </div>
 
       <div className="module-steps">
-        <span className="module-step">1 Watch</span>
-        <span className="module-step">2 Read</span>
-        <span className="module-step">3 Check</span>
+        {m.resources?.videos?.length ? <span className="module-step">1 Watch</span> : null}
+        <span className="module-step">{m.resources?.videos?.length ? 2 : 1} Read</span>
+        <span className="module-step">{m.resources?.videos?.length ? 3 : 2} Check</span>
       </div>
 
       <section className="section-card">
@@ -261,7 +263,10 @@ const ModuleView = () => {
         <h3><span className="step-badge">3</span> Check</h3>
         {!quiz && !quizLoading && (
           <>
-            <p className="quiz-intro">Three quick questions to make sure it landed. Pass two and the next module unlocks.</p>
+            <p className="quiz-intro">
+              A short check on what this module covered, a few questions, some asking you to use
+              the idea rather than recall it. Pass two thirds and the next module unlocks.
+            </p>
             <button className="btn-primary" onClick={startQuiz}>Start the check</button>
             {quizError && <p className="quiz-error"><IconAlert size={15} /> {quizError}</p>}
           </>
@@ -274,6 +279,11 @@ const ModuleView = () => {
             {quiz.questions.map((q, qi) => (
               <div key={qi} className="quiz-question">
                 <p className="quiz-q-text">{qi + 1}. {q.q}</p>
+                {q.kind && q.kind !== "recall" && (
+                  <span className={`quiz-kind ${q.kind}`}>
+                    {q.kind === "apply" ? "Applying it" : "Common mistake"}
+                  </span>
+                )}
                 <div className="quiz-options">
                   {q.options.map((opt, oi) => {
                     const picked = answers[qi] === oi;
@@ -314,7 +324,9 @@ const ModuleView = () => {
               <div className="quiz-result">
                 <p className={quizPassed ? "quiz-score ok" : "quiz-score"}>
                   {score} of {quiz.questions.length} correct.
-                  {quizPassed ? " The next module is unlocked below." : " Two or more passes, try once more."}
+                  {quizPassed
+                    ? " The next module is unlocked below."
+                    : ` ${passMark} needed to pass, try once more.`}
                 </p>
                 {!quizPassed && (
                   <button className="btn-secondary" onClick={() => { setAnswers([]); setSubmitted(false); }}>

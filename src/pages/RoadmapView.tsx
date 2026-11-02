@@ -180,7 +180,7 @@ const RoadmapView = () => {
                 </span>
               </div>
               <p className="trace-note">
-                Pipeline: Researcher (Wikipedia) builds a source pack, Builder writes the 8 modules,
+                Pipeline: Researcher (Wikipedia) builds a source pack, Builder writes the modules for that topic,
                 Validator enforces the contract and rebuilds once if short. Costs use indicative
                 Groq pricing; the demo itself runs on the free tier.
               </p>

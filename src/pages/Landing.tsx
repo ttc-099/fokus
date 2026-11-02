@@ -74,7 +74,8 @@ const PathDemo = () => {
 
   const demo = reduced ? DEMOS[0] : DEMOS[Math.floor(tick / CYCLE) % DEMOS.length];
   const local = reduced ? CYCLE : tick % CYCLE;
-  const shown = reduced ? 8 : Math.max(0, Math.min(8, local - SHOW_AT + (local >= SHOW_AT ? 1 : 0)));
+  const total = demo.modules.length;
+  const shown = reduced ? total : Math.max(0, Math.min(total, local - SHOW_AT + (local >= SHOW_AT ? 1 : 0)));
   const checked = reduced ? demo.done : Math.max(0, Math.min(demo.done, local - CHECK_AT));
 
   return (
@@ -100,10 +101,10 @@ const PathDemo = () => {
         ))}
       </div>
       <p className="lp-demo-status" aria-live="off">
-        {shown < 8
+        {shown < total
           ? "Building your path, one module at a time"
           : checked > 0
-            ? `${checked} of 8 modules done`
+            ? `${checked} of ${total} modules done`
             : "Your path is ready. Open module 1."}
       </p>
     </div>
@@ -150,7 +151,7 @@ const Landing = () => (
     <section className="lp-section">
       <div className="lp-section-head">
         <h2>Watch your path build itself</h2>
-        <p>A topic goes in, eight modules come out, each one building on the last.</p>
+        <p>A topic goes in, a path sized to it comes out: each module building on the last.</p>
       </div>
       <PathDemo />
     </section>
@@ -187,7 +188,7 @@ const Landing = () => (
               <span className="lp-dot" /><span className="lp-dot" /><span className="lp-dot" />
               <span className="lp-url">fokus.app/roadmap</span>
             </div>
-            <img src={roadmapShot} alt="A watercolor painting roadmap shown as a vertical timeline of 8 numbered modules" />
+            <img src={roadmapShot} alt="A watercolor painting roadmap shown as a vertical timeline of numbered modules" />
           </div>
           <figcaption>Your roadmap, one module per step</figcaption>
         </figure>

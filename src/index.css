@@ -2198,3 +2198,17 @@ button:disabled { cursor: not-allowed; }
   .roadmap-actions .action-icon { padding: 0; width: 40px; justify-content: center; }
   .roadmap-header-row .btn-ghost { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 }
+
+/* check questions: a small label when the question asks you to apply the idea */
+.quiz-kind {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin: -2px 0 8px;
+}
+.quiz-kind.apply { background: var(--blue-soft); color: var(--blue-dark); border: 1px solid var(--blue-border); }
+.quiz-kind.trap { background: #fff7ed; color: #b45309; border: 1px solid #fed7aa; }
