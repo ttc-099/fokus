@@ -4,7 +4,8 @@
 
 import { useEffect, useState, type ReactElement } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { api, useAuth } from "../services/api";
+import { useAuth } from "../services/api";
+import { signOut } from "../services/session";
 import {
   IconMap, IconGrid, IconSettings, IconChart, IconUsers, IconLayers,
   IconLogout, IconMenu, IconClose,
@@ -55,10 +56,9 @@ const MobileMenu = () => {
   const isActive = (item: NavItem) =>
     item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to);
 
-  const signOut = async () => {
-    await api.logout();
-    setUser(null);
-    navigate("/login");
+  const doSignOut = async () => {
+    await signOut(setUser);
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -111,7 +111,7 @@ const MobileMenu = () => {
                     <span className="side-avatar">{user.username.slice(0, 2).toUpperCase()}</span>
                     <span className="side-username">{user.username}</span>
                   </div>
-                  <button className="side-signout" onClick={signOut}>
+                  <button className="side-signout" onClick={doSignOut}>
                     <IconLogout size={16} />
                     <span>Sign out</span>
                   </button>

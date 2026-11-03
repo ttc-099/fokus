@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api, useAuth, type Activity, type RoadmapSummary } from "../services/api";
+import { signOut } from "../services/session";
 import { IconMap, IconGrid, IconSettings, IconChart, IconUsers, IconLayers, IconLogout } from "./icons";
 import CourseSidebar from "./CourseSidebar";
 
@@ -40,10 +41,9 @@ const Sidebar = () => {
     );
   }
 
-  const signOut = async () => {
-    await api.logout();
-    setUser(null);
-    navigate("/login");
+  const doSignOut = async () => {
+    await signOut(setUser);
+    navigate("/login", { replace: true });
   };
 
   // which roadmap page is open right now (for the active row highlight)
@@ -161,7 +161,7 @@ const Sidebar = () => {
               <span className="side-avatar">{user.username.slice(0, 2).toUpperCase()}</span>
               <span className="side-username">{user.username}</span>
             </div>
-            <button className="side-signout" onClick={signOut}>
+            <button className="side-signout" onClick={doSignOut}>
               <IconLogout size={16} />
               <span>Sign out</span>
             </button>

@@ -215,7 +215,9 @@ export const api = {
     request<{ username: string }>("POST", "/auth/login", { username, password }),
   register: (username: string, password: string) =>
     request<{ username: string }>("POST", "/auth/register", { username, password }),
-  logout: () => request<{ ok: boolean }>("POST", "/auth/logout"),
+  // a missing or expired session answers 401; signing out is still a success
+  logout: () => request<{ ok: boolean }>("POST", "/auth/logout")
+    .catch(() => ({ ok: true })),
 
   // roadmaps
   listRoadmaps: () => request<RoadmapSummary[]>("GET", "/roadmaps"),

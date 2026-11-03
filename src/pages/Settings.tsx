@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, useAuth, type AdminStats, type RoadmapSummary } from "../services/api";
+import { signOut } from "../services/session";
 
 const ago = (ts: number) => {
   const s = Math.floor(Date.now() / 1000 - ts);
@@ -24,10 +25,9 @@ const Settings = () => {
     api.adminStats().then(setInstance).catch(() => setInstance(null));
   }, []);
 
-  const signOut = async () => {
-    await api.logout();
-    setUser(null);
-    navigate("/login");
+  const doSignOut = async () => {
+    await signOut(setUser);
+    navigate("/login", { replace: true });
   };
 
   const clearAll = async () => {
@@ -62,7 +62,7 @@ const Settings = () => {
             {user && <> since {new Date(user.createdAt * 1000).toLocaleDateString()}</>}
           </p>
           <div className="card-actions">
-            <button className="btn-secondary" onClick={signOut}>Sign out</button>
+            <button className="btn-secondary" onClick={doSignOut}>Sign out</button>
           </div>
         </div>
 
