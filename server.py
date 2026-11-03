@@ -226,9 +226,29 @@ LLM_CALLS = []
 COST_IN, COST_OUT = 0.05, 0.10
 
 
-def groq_chat(messages, max_tokens=1400):
+def groq_chat(messages, max_tokens=1400, retries=2):
     # no response_format: groq's json_object validation chokes on gpt-oss
-    # reasoning output intermittently, so we parse the text defensively
+    # reasoning output intermittently, so we parse the text defensively.
+    # the model sometimes answers in prose instead of json, and the free tier
+    # returns 429 on bursts, so retry both before surfacing an error.
+    last = None
+    for attempt in range(retries + 1):
+        try:
+            return _groq_once(messages, max_tokens)
+        except ValueError as e:
+            # prose instead of json: nudge it harder and try again
+            last = e
+            messages = messages + [{"role": "user",
+                                    "content": "Output only a JSON object, nothing else."}]
+        except urllib.error.HTTPError as e:
+            last = e
+            if e.code not in (429, 500, 502, 503):
+                raise
+            time.sleep(2 + attempt * 3)
+    raise last
+
+
+def _groq_once(messages, max_tokens=1400):
     t0 = time.time()
     r = http_json(GROQ_URL,
                   payload={"model": MODEL,
@@ -284,7 +304,9 @@ def generate_modules(topic):
 
     def build():
         base_prompt = (
-            'Create a JSON object {"modules": array of exactly 8 items}. '
+            'Create a JSON object {"modules": array of items}. '
+            'Decide how many items the topic genuinely needs: a broad field may need 12, '
+            'a narrow skill may need 5. Between 5 and 12, sized to the real scope, never padded. '
             'Each item: {"title": a stage name of max 6 words, '
             '"content": 2 sentences, what to learn at this stage and why it matters}. '
             f'Topic: "{topic}". '
@@ -297,12 +319,13 @@ def generate_modules(topic):
         return groq_chat(state["msgs"], max_tokens=4000).get("modules", [])
 
     def validate(mods):
-        # validator: enforce the 8-module contract, rebuild once if short
-        if isinstance(mods, list) and len(mods) >= 8:
+        # validator: keep the model's own module count, rebuild only if unusable
+        count = len(mods) if isinstance(mods, list) else 0
+        if 5 <= count <= 12:
             return mods
         state["msgs"].append(
             {"role": "user",
-             "content": f"Return the full roadmap: exactly 8 modules. Your previous answer had {len(mods) if isinstance(mods, list) else 0}."})
+             "content": f"Return the full roadmap as JSON. Your previous answer had {count} modules; it needs between 5 and 12, sized to the topic."})
         return groq_chat(state["msgs"], max_tokens=4000).get("modules", [])
 
     sources = stage("Researcher", research)
@@ -341,31 +364,65 @@ def generate_detail(topic, title, index):
              'Create a JSON object {"content": one string}. The string: a 150-220 word '
              'free-form study guide for module ' + str(index) + f' ("{title}") of a learning path on "{topic}". '
              'Write it as 2-3 natural flowing paragraphs, like a friendly tutor explaining the module. '
-             'Weave in the key concepts, one concrete practice exercise, and one common beginner mistake '
-             'inside the paragraphs. Strictly no bullet points, no numbered lists, no headings, no markdown. '
+             'Weave in the key concepts and one common beginner mistake inside the paragraphs. '
+             'Strictly no bullet points, no numbered lists, no headings, no markdown. '
+             'Also include "worked", a fully worked example of the core skill of this stage: '
+             '{"setup": the concrete situation in one line, "steps": [3 to 5 short numbered actions, '
+             'each one sentence, concrete and specific to the topic], "result": what the learner ends '
+             'up with, one sentence, "watchout": the specific mistake people make at one of these '
+             'steps, one sentence}. The example must be something the learner could actually do right '
+             'now at this level, not a summary of the idea. '
              f'Wikipedia research: {research_block(sources)}'},
-    ], max_tokens=2500)
+    ], max_tokens=6000)  # gpt-oss spends ~1.5k on reasoning before any output
+    worked = data.get("worked") if isinstance(data.get("worked"), dict) else None
+    if worked:
+        raw_steps = [str(x).strip() for x in (worked.get("steps") or [])][:5]
+        # the ui numbers the steps itself, so drop any "1." / "1)" the model adds
+        steps = [re.sub(r"^\s*\d+\s*[.)]\s*", "", x) for x in raw_steps]
+        worked = {"setup": str(worked.get("setup", "")).strip()[:300],
+                  "steps": [x[:240] for x in steps if x],
+                  "result": str(worked.get("result", "")).strip()[:300],
+                  "watchout": str(worked.get("watchout", "")).strip()[:300]}
+        if len(worked["steps"]) < 2:
+            worked = None
     return {
-        "v": 2,
+        "v": 3,
         "content": str(data.get("content", "")).strip(),
+        "worked": worked,
         "sources": [{"title": s["title"], "url": s["url"]} for s in sources],
     }
 
 
-def generate_quiz(topic, title, index):
-    # three quick comprehension questions, generated once and stored per module
+def generate_quiz(topic, title, index, guide="", watched=None):
+    # a check sized to the module: what the guide actually covered decides how many
+    # targeted questions there are, and they must span recall, application and a trap
+    guide_block = (guide or "")[:2600] if guide else ""
     data = groq_chat([
         {"role": "system",
-         "content": "You write short comprehension quizzes. Output strict JSON only, no prose."},
+         "content": "You write targeted comprehension checks. Output strict JSON only, no prose."},
         {"role": "user",
          "content":
-             'Create a JSON object {"questions": [...]} with exactly 3 multiple-choice questions '
-             f'testing whether someone understood module {index} ("{title}") of a learning path on "{topic}". '
-             'Each item: {"q": the question, "options": [4 short answers], "answer": index of the '
-             'correct option (0-3), "why": one short sentence explaining it}. '
+             'Create a JSON object {"questions": [...]} checking whether someone really '
+             f'understood module {index} ("{title}") of a learning path on "{topic}". '
+             'Decide the count from the material: pick the number needed to cover every distinct '
+             'concept in the guide, between 3 and 5. Do not pad, do not repeat a concept. '
+             'Each question must be targeted at a specific idea, not general trivia, and across '
+             'the set cover at least one of these kinds: '
+             '{"kind": "recall", ...} remembering a definition or term; '
+             '{"kind": "apply", ...} using the idea in a situation they have not seen; '
+             '{"kind": "trap", ...} a common beginner mistake stated so the wrong answer looks tempting. '
+             'Each item: {"q": the question, "kind": one of recall/apply/trap, '
+             '"concept": the specific idea it tests (3-6 words), "options": [4 short answers], '
+             '"answer": index of the correct option (0-3), "why": one sentence a learner learns something from, explaining why the right answer is right rather than just naming the concept. '
              'Exactly one option is correct, the others plausible but wrong. '
-             'Keep every option under 90 characters, plain text, no markdown.'},
-    ], max_tokens=1200)
+             'Keep every option under 90 characters, plain text, no markdown. '
+             + (f"Study guide the learner just read: {guide_block}" if guide_block
+                else "Write questions that test the module scope stated above.")
+             + (" Videos they watched: " + "; ".join(watched[:3]) +
+                ". Cover the concepts those videos and the guide share; if a concept is only "
+                "in the videos, test that too, so the check matches what they actually saw."
+                if watched else "")},
+    ], max_tokens=4000)  # reasoning + up to five questions
     out = []
     for q in (data.get("questions") or [])[:6]:
         if not isinstance(q, dict):
@@ -376,12 +433,17 @@ def generate_quiz(topic, title, index):
         except Exception:
             ans = -1
         text = str(q.get("q", "")).strip()
+        kind = str(q.get("kind", "")).strip().lower()
+        if kind not in ("recall", "apply", "trap"):
+            kind = "recall"
         if len(opts) == 4 and 0 <= ans < 4 and text:
-            out.append({"q": text, "options": opts, "answer": ans,
+            out.append({"q": text, "kind": kind,
+                        "concept": str(q.get("concept", "")).strip()[:60],
+                        "options": opts, "answer": ans,
                         "why": str(q.get("why", "")).strip()})
-    if len(out) < 3:
-        raise ValueError("quiz came back incomplete")
-    return {"v": 1, "questions": out[:3]}
+    # 3 to 5 questions, and the pass mark is two thirds of whatever was asked
+    out = out[:5]
+    return {"v": 2, "questions": out, "pass": max(2, -(-len(out) * 2 // 3))}
 
 
 # ---- youtube: scrape the results page (no key needed), verify via oembed
@@ -415,6 +477,15 @@ def youtube_videos(query, want=3):
                         "length": length.group(1) if length else ""})
             if len(out) >= want + 4:
                 break
+        # rank by title overlap with the stage, so a same-name-but-wrong-topic video
+        # does not ride in on search position alone
+        words = {w.lower() for w in re.findall(r"[a-z]{4,}", query)}
+        def score(v):
+            t = {w.lower() for w in re.findall(r"[a-z]{4,}", v.get("title", ""))}
+            return len(words & t)
+        out.sort(key=score, reverse=True)
+        out = [v for v in out if score(v) > 0] or out
+
         # verify each candidate really exists (and drop dead/embed-blocked ones)
         verified = []
         for v in out:
@@ -1096,8 +1167,11 @@ class Handler(SimpleHTTPRequestHandler):
                 if not ai_allowed(self.client_ip()):
                     return self._json(429, {"error": "rate limited, try again later"})
                 try:
+                    vids = (modules[index].get("resources") or {}).get("videos") or []
                     modules[index]["quiz"] = generate_quiz(
-                        row["topic"], modules[index]["title"], index + 1)
+                        row["topic"], modules[index]["title"], index + 1,
+                        guide=(modules[index].get("detail") or {}).get("content", ""),
+                        watched=[v.get("title", "") for v in vids if v.get("title")])
                 except Exception:
                     return self._json(502, {"error": "quiz generation failed, try again"})
                 c.execute("UPDATE roadmaps SET modules = ? WHERE id = ?",
