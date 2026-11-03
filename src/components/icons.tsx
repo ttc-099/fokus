@@ -83,3 +83,11 @@ export const IconQuiz = ({ size = 16, className }: IconProps) =>
 // a bookmark, for keeping a roadmap on the device
 export const IconBookmark = ({ size = 16, className }: IconProps) =>
   svg(<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />, size, className);
+
+// three lines, for the phone menu
+export const IconMenu = ({ size = 22, className }: IconProps) =>
+  svg(<><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>, size, className);
+
+// a cross, for closing the menu
+export const IconClose = ({ size = 20, className }: IconProps) =>
+  svg(<><path d="M18 6L6 18" /><path d="M6 6l12 12" /></>, size, className);

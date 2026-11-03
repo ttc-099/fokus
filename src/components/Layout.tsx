@@ -1,6 +1,7 @@
 // src/components/Layout.tsx
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import MobileMenu from './MobileMenu'
 import OfflineNotice from './OfflineNotice'
 
 const Layout = () => {
@@ -8,10 +9,7 @@ const Layout = () => {
     <div className="app-shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <Sidebar />
-      <div className="mobile-topbar">
-        <span className="brand-mark">F</span>
-        <span className="brand-name">FOKUS</span>
-      </div>
+      <MobileMenu />
       <main className="main-canvas" id="main">
         <OfflineNotice />
         <Outlet />
