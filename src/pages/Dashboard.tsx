@@ -15,6 +15,8 @@ const Dashboard = () => {
   const [topic, setTopic] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
+  // which pipeline stage to name while generating (research, write, check)
+  const [genStep, setGenStep] = useState(0);
   // set when the topic gate rejects the input
   const [gate, setGate] = useState<{ message: string; suggestions: string[] } | null>(null);
 
@@ -34,6 +36,16 @@ const Dashboard = () => {
         setOfflineOnly(true);
       });
   }, []);
+
+  // while generating, walk the three real pipeline stages so the wait is not a blank spin
+  useEffect(() => {
+    if (!creating) {
+      setGenStep(0);
+      return;
+    }
+    const id = setInterval(() => setGenStep((n) => (n < 2 ? n + 1 : n)), 1400);
+    return () => clearInterval(id);
+  }, [creating]);
 
   const createWith = async (topicToUse: string) => {
     setError("");
@@ -134,7 +146,7 @@ const Dashboard = () => {
             aria-label="Topic to learn"
           />
           <button type="submit" className="btn-primary" disabled={creating || topic.trim().length < 2}>
-            <IconPlus size={17} />
+            {creating ? <span className="spinner" aria-hidden="true" /> : <IconPlus size={17} />}
             {creating ? "Generating..." : "New roadmap"}
           </button>
         </form>
@@ -148,7 +160,22 @@ const Dashboard = () => {
             ))}
           </div>
         )}
-        {creating && <p className="hint" role="status" aria-live="polite">The AI researches your topic and builds the modules it needs, this takes a few seconds</p>}
+        {creating && (
+          <div className="gen-wait" role="status" aria-live="polite">
+            <span className="spinner lg" aria-hidden="true" />
+            <span className="gen-wait-text">
+              <span className="gen-wait-title">
+                {["Researching your topic", "Writing the stages", "Checking the sequence"][genStep]}
+              </span>
+              <span className="gen-wait-sub">
+                Building a path for "{topic.trim()}", this usually takes a few seconds.
+              </span>
+              <span className="gen-wait-step">
+                {["Reading sources", "Ordering beginner to advanced", "Verifying the stages"][genStep]} · step {genStep + 1} of 3
+              </span>
+            </span>
+          </div>
+        )}
         {error && <p className="error-text">{error}</p>}
 
         {gate && (

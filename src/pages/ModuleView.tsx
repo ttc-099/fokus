@@ -204,7 +204,7 @@ const ModuleView = () => {
 
       <section className="section-card">
         <h3><span className="step-badge">1</span> Watch</h3>
-        {resPending && !m.resources && <p className="content-loading">Finding videos...</p>}
+        {resPending && !m.resources && <p className="content-loading"><span className="spinner" aria-hidden="true" /> Finding videos...</p>}
         {m.resources ? (
           hasVideos && video0 ? (
             <>
@@ -231,7 +231,7 @@ const ModuleView = () => {
 
       <section className="section-card">
         <h3><span className="step-badge">2</span> Read</h3>
-        {detailPending && <p className="content-loading">Writing your study guide...</p>}
+        {detailPending && <p className="content-loading"><span className="spinner" aria-hidden="true" /> Writing your study guide...</p>}
         {m.detail?.v === 2 && m.detail.content ? (
           <>
             <ProseGuide text={m.detail.content} />
@@ -268,7 +268,7 @@ const ModuleView = () => {
         ) : m.fullContent ? (
           <ProseGuide text={m.fullContent} />
         ) : !detailPending ? (
-          <p className="content-loading">Open this module again to load the guide</p>
+          <p className="content-loading"><span className="spinner" aria-hidden="true" /> Loading the guide...</p>
         ) : null}
         {m.resources && m.resources.links.length > 0 && (
           <>
@@ -299,7 +299,7 @@ const ModuleView = () => {
           </>
         )}
 
-        {quizLoading && <p className="content-loading">Writing your questions...</p>}
+        {quizLoading && <p className="content-loading"><span className="spinner" aria-hidden="true" /> Writing your questions...</p>}
 
         {quiz && (
           <div className="quiz-block">

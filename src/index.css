@@ -2365,3 +2365,40 @@ button:disabled { cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   .sheet, .sheet-backdrop { animation: none; }
 }
+
+/* ---------- loading spinner ---------- */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--blue-border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: spin 700ms linear infinite;
+}
+.spinner.lg { width: 24px; height: 24px; border-width: 2.5px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  /* a rotating ring is exactly what this setting asks us not to do */
+  .spinner { animation: none; border-top-color: var(--blue-border); border-right-color: var(--blue); }
+}
+
+/* the wait while a roadmap is being researched and written */
+.gen-wait {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--blue-border);
+  background: var(--blue-soft);
+  border-radius: 12px;
+}
+.gen-wait-text { display: flex; flex-direction: column; gap: 2px; }
+.gen-wait-title { font-size: 0.95rem; font-weight: 600; color: var(--blue-dark); }
+.gen-wait-sub { font-size: 0.85rem; color: var(--ink-2); }
+.gen-wait-step { font-size: 0.8rem; color: var(--ink-3); }
+
+/* inline loading line inside a module */
+.content-loading { display: flex; align-items: center; gap: 9px; }
